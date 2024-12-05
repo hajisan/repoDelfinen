@@ -4,23 +4,40 @@ import java.util.ArrayList;
 
 public class KonsolHandler {
 
+    //Constructor -- Tom indtil videre
     public KonsolHandler() {
 
     }
 
+    //Opretter et nyt medlem med Factory-metoden fra Medlem-klassen
     public Medlem opretMedlem(String navn, String fødselsdato, String medlemskategori) {
         return Medlem.opretMedlem(navn, stringToLocalDate(fødselsdato), medlemskategori);
     }
 
+    //Tilføjer en tid til det valgte medlem ud fra tid i sekunder og millisekunder
     public void tilføjTidTilMedlem(Medlem medlem, long sekunder, long millisekunder) {
-        medlem.tilføjTid(Duration.ofSeconds(sekunder, millisekunder*1000));
+        //medlem.tilføjTid(Duration.ofSeconds(sekunder, millisekunder*1000));
     }
 
-    public ArrayList<Duration> visSvømmetider(Medlem medlem) {
+    //Tilføjer en træningstid til det valgte medlem
+    public void tilføjSvømmetidTilMedlem(Medlem medlem, Duration tid, String disciplin, LocalDate dato) {
+        Svømmetid svømmetid = new Svømmetid(tid, disciplin, dato);
+        medlem.tilføjTræningstid(svømmetid);
+    }
+
+    //Tilføjer en Stævnetid til det valgte medlem
+    public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, String disciplin, LocalDate dato, String lokalitet) {
+        Stævnetid stævnetid = new Stævnetid(tid, disciplin, dato, lokalitet);
+        medlem.tilføjStævnetid(stævnetid);
+    }
+
+    //Returnerer en ArrayList af et givent medlems Svømmetider
+    public ArrayList<Svømmetid> visSvømmetider(Medlem medlem) {
         return medlem.getSvømmetider();
     }
 
-    public ArrayList<Duration> visStævnetider(Medlem medlem) {
+    //Returnerer en ArrayList af et givent medlems Stævnetider
+    public ArrayList<Stævnetid> visStævnetider(Medlem medlem) {
         return medlem.getStævnetider();
     }
 
