@@ -3,10 +3,10 @@ import java.time.LocalDate;
 // Abstrakt klasse som representerer et medlem
 public abstract class Medlem {
     // Private instansvariabler for medlemsegenskaper
-    private String navn;
-    private String ID;
-    private LocalDate fødselsdato;
-    private String medlemskategori;
+    protected String navn;
+    protected String ID;
+    protected LocalDate fødselsdato;
+    protected String medlemskategori;
 
     // Konstruktør for å initialisere et Medlem-objekt
     public Medlem(String navn, String ID, LocalDate fødselsdato, String medlemskategori) {
