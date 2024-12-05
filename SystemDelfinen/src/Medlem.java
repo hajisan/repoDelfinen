@@ -87,7 +87,7 @@ public abstract class Medlem {
         this.medlemskategori = medlemskategori;
     }
 
-    // toString-metode for å returnere en strengrepresentasjon av Medlem-objektet
+    // toString-metode for at returnere en String af et Medlem-objekt
     public String toString() {
         return "Medlem{" +
                 "Navn: " + navn + "\n" +
