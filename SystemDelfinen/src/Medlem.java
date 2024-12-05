@@ -1,15 +1,24 @@
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 // Abstrakt klasse som representerer et medlem
-public abstract class Medlem {
+public abstract class Medlem {  
     // Private instansvariabler for medlemsegenskaper
     private String navn;
     private String ID;
-    private LocalDate fødselsdato;
-    private String medlemskategori;
+    private LocalDate fødselsDato;
+    private String medlemsKategori;
+
+    protected String navn;
+    protected String ID;
+    protected LocalDate fødselsdato;
+    protected String medlemskategori;
+    protected ArrayList<Svømmetid> træningstider;
+    protected ArrayList<Stævnetid> stævnetider;
+
 
     // Konstruktør for å initialisere et Medlem-objekt
-    public Medlem(String navn, String ID, LocalDate fødselsdato, String medlemskategori) {
+    public Medlem(String navn, String ID, LocalDate fødselsDato, String medlemsKategori) {
         // Tjekker om navnet er null eller tomt og kaster en IllegalArgumentException hvis det er tilfældet
         if (navn == null || navn.isEmpty()) {
             throw new IllegalArgumentException("Navn må ikke være tomt.");
@@ -17,8 +26,19 @@ public abstract class Medlem {
 
         this.navn = navn;
         this.ID = ID;
-        this.fødselsdato = fødselsdato;
-        this.medlemskategori = medlemskategori;
+        this.fødselsDato = fødselsDato;
+        this.medlemsKategori = medlemsKategori;
+    }
+
+
+    public abstract double beregnKontingent();
+
+    public void tilføjTræningstid(Svømmetid træningstid) {
+        this.træningstider.add(træningstid);
+    }
+
+    public void tilføjStævnetid(Stævnetid stævnetid) {
+        this.stævnetider.add(stævnetid);
     }
 
     //Returnerer en specifik subklasseobjekt af Medlem-klassen baseret på ønsket medlemskategori og -fødselsdato
@@ -54,6 +74,7 @@ public abstract class Medlem {
 
     }
 
+
     // Getter og Setter metoder
     public String getNavn() {
         return navn;
@@ -71,20 +92,20 @@ public abstract class Medlem {
         this.ID = ID;
     }
 
-    public LocalDate getFødselsdato() {
-        return fødselsdato;
+    public LocalDate getFødselsDato() {
+        return fødselsDato;
     }
 
-    public void setFødselsdato(LocalDate fødselsdato) {
-        this.fødselsdato = fødselsdato;
+    public void setFødselsDato(LocalDate fødselsDato) {
+        this.fødselsDato = fødselsDato;
     }
 
-    public String getMedlemskategori() {
-        return medlemskategori;
+    public String getMedlemsKategori() {
+        return medlemsKategori;
     }
 
-    public void setMedlemskategori(String medlemskategori) {
-        this.medlemskategori = medlemskategori;
+    public void setMedlemsKategori(String medlemsKategori) {
+        this.medlemsKategori = medlemsKategori;
     }
 
     // toString-metode for at returnere en String af et Medlem-objekt
@@ -92,8 +113,8 @@ public abstract class Medlem {
         return "Medlem{" +
                 "Navn: " + navn + "\n" +
                 "ID: " + ID + "\n" +
-                "Fødselsdato: " + fødselsdato + "\n" +
-                "Medlemskategori: " + medlemskategori + "\n" +
+                "Fødselsdato: " + fødselsDato + "\n" +
+                "Medlemskategori: " + medlemsKategori + "\n" +
                 "}";
     }
 }
