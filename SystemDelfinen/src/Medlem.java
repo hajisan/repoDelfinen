@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 // Abstrakt klasse som representerer et medlem
 public abstract class Medlem {
@@ -7,6 +8,8 @@ public abstract class Medlem {
     protected String ID;
     protected LocalDate fødselsdato;
     protected String medlemskategori;
+    protected ArrayList<Svømmetid> træningstider;
+    protected ArrayList<Stævnetid> stævnetider;
 
     // Konstruktør for å initialisere et Medlem-objekt
     public Medlem(String navn, String ID, LocalDate fødselsdato, String medlemskategori) {
@@ -19,6 +22,14 @@ public abstract class Medlem {
         this.ID = ID;
         this.fødselsdato = fødselsdato;
         this.medlemskategori = medlemskategori;
+    }
+
+    public void tilføjTræningstid(Svømmetid træningstid) {
+        this.træningstider.add(træningstid);
+    }
+
+    public void tilføjStævnetid(Stævnetid stævnetid) {
+        this.stævnetider.add(stævnetid);
     }
 
     //Returnerer en specifik subklasseobjekt af Medlem-klassen baseret på ønsket medlemskategori og -fødselsdato
