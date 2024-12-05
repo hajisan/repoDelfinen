@@ -13,9 +13,8 @@ bruger gson. Modsatte gør sig så gældende for fromJson
 
 public class FilStyrer {
     private static final String filNavn = "AlleMedlemmer.json"; // Navn på JSON-filen
-    private static final String idFileNavn = "id_count.json"; // Navn på JSON-filen
-    private static final String filNavn = "AlleMedlemmer.json"; // Navn på JSON-filen, da Allemedlemmer ligger i root,
-    //skal der ikke være en filsti angivet.
+    private static final String idFilNavn = "id_count.json"; // Navn på JSON-filen
+
 
     /*
      Læser JSON-filen som en String og konverterer det til en liste over Medlem-objekter.
@@ -80,10 +79,10 @@ public class FilStyrer {
             System.out.println("Fejl ved tilføjelse af medlem: " + e.getMessage());
         }
     }
-    
-    public void sletMedlem(Medlem eksisterendeMedlem){
+
+    public void sletMedlem(Medlem eksisterendeMedlem) {
         ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); //læser eksisterende medlemmer
-        System.out.println("Medlem: " +"'"+ eksisterendeMedlem + "'" + " bliver slettet");
+        System.out.println("Medlem: " + "'" + eksisterendeMedlem + "'" + " bliver slettet");
         medlemmer.remove(eksisterendeMedlem); // indbygget ArrayList metode til at fjerne medlem
         gemAlleMedlemmer(medlemmer); //her kalder vi metoden "gemAlleMedlemmer", så vi får en opdateret liste.
         System.out.println("Medlemmet er slettet og listen er blevet opdateret");
@@ -122,7 +121,7 @@ public class FilStyrer {
 
                         case 2:
                             System.out.println("Indtast ny medlemskategori (AktivJunior, AktivSenior, PassivtMedlem):");
-                            String nyKategori = sc.nextLine.();
+                            String nyKategori = sc.nextLine();
 
                             // Behold gamle værdier
                             String id = medlem.getID();
@@ -157,7 +156,7 @@ public class FilStyrer {
                         case 3:
                             System.out.println("Indtast ny fødselsdato (format: YYYY-MM-DD):");
                             String nyDato = sc.nextLine();
-                            medlem.setFødselsdato(nyDato);
+                            medlem.setFødselsdato(KonsolHandler.stringToLocalDate(nyDato));
                             break;
 
                         case 4:
@@ -184,16 +183,15 @@ public class FilStyrer {
     /*
      her skaber vi bare filen med en tom struktur, hvis den ikke findes.
      */
-        public void initialiserFil () {
-            File file = new File(filNavn);
+    public void initialiserFil() {
+        File file = new File(filNavn);
 
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();
-                    System.out.println("Filen blev oprettet: " + filNavn);
-                } catch (IOException e) {
-                    System.out.println("Fejl ved oprettelse af fil: " + e.getMessage());
-                }
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                System.out.println("Filen blev oprettet: " + filNavn);
+            } catch (IOException e) {
+                System.out.println("Fejl ved oprettelse af fil: " + e.getMessage());
             }
         }
     }
@@ -201,7 +199,8 @@ public class FilStyrer {
 
     // Læs ID-tælleren fra id_count.json
     public int læsCurrentId() {
-        try (FileReader reader = new FileReader(idFileNavn)) {
+        try (FileReader reader = new FileReader(idFilNavn)) {
+            Gson gson = new Gson();
             idCount idCount = gson.fromJson(reader, idCount.class);
             return idCount.getCurrentId(); // Returnere det akutelle ID
         } catch (IOException e) {
@@ -212,7 +211,8 @@ public class FilStyrer {
 
     // Opdatere ID-tælleren i, id_count.json
     public void opdatereIdCount(int nyId) {
-        try (FileWriter writer = new FileWriter(idFileNavn)) {
+        try (FileWriter writer = new FileWriter(idFilNavn)) {
+            Gson gson = new Gson();
             idCount idCount = new idCount();
             idCount.setCurrentId(nyId);
             gson.toJson(idCount, writer); // Gem den nye ID-værdi i filen
@@ -222,12 +222,14 @@ public class FilStyrer {
     }
 
     // Genere et unikt ID
-    public String genereUnikId() {
+    public String genereUniktId() {
         int currentId = læsCurrentId(); // Læs det nuværende ID
         String nyId = String.format("SKD%04d", currentId); // Formatere ID som DSF0001, DSF0002, osv.
         opdatereIdCount(currentId + 1); // Opdatere ID-tælleren
         return nyId; // Returnere det nye ID
     }
-    
 }
+
+    
+
 
