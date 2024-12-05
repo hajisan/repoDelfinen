@@ -56,11 +56,11 @@ public abstract class Medlem {
             //Kaster en IllegalArgumentException, hvis medlemskategori er null
             case null:
                 throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
-                break;
+
             //Kaster en IllegalArgumentException, hvis medlemskategori er en tom String
             case "":
                 throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
-                break;
+
             //Hvis der er valgt et aktivt medlem, så vælges der mellem AktivJuniorMedlem og AktivSeniorMedlem baseret
             //på, om medlemmet er over 18 år gammelt. Derefter returneres der et passende Medlem-objekt
             case "aktiv":
@@ -69,11 +69,11 @@ public abstract class Medlem {
                 } else {
                     return new AktivSeniorMedlem(navn, fødselsdato, medlemskategori);
                 }
-                break;
+
             //Hvis der er valgt et passivt medlem, så returneres der et nyt PassivtMedlem-objekt
             case "passiv":
                 return new PassivtMedlem(navn, fødselsdato, medlemskategori);
-            break;
+
             //Kaster en IllegalArgumentException, hvis der er indtastet en ikke-tom String der ikke specifikt er "aktiv" eller "passiv"
             default:
                 throw new IllegalArgumentException("Medlemskategori " + medlemskategori + " kan ikke genkendes. Skriv venligst enten aktiv eller passiv.");
@@ -115,7 +115,7 @@ public abstract class Medlem {
         this.medlemsKategori = medlemsKategori;
     }
 
-    public ArrayList<Svømmetid> getTræningstider() {
+    public ArrayList<Svømmetid> getSvømmetider() {
         return træningstider;
     }
 

@@ -39,7 +39,7 @@ public class Svømmetid {
         Svømmetid nySvømmetid = new Svømmetid(nyTid, disciplin, dato);
 
         // Tilføj svømmetiden til medlemmets træningsresultater
-        medlem.getTræningsresultater().add(nySvømmetid);
+        medlem.getSvømmetider().add(nySvømmetid);
 
         // Feedback til konsollen
         System.out.println("Svømmetid tilføjet: " + formatDuration(nyTid) + " i " +
