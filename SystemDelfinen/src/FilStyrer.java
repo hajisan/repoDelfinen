@@ -1,6 +1,9 @@
 import com.google.gson.Gson;
+
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /*GSOn er et java bibliotek, der gør det nemt at arbejde i json fil.
 toJson konvertere objekter til skrift der kan lagres. hovedpointen med vi
@@ -76,19 +79,110 @@ public class FilStyrer {
         }
     }
 
+    public void redigerMedlem() {
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer();
+
+        Scanner sc = new Scanner(System.in);
+
+        String input = sc.nextLine();
+        for (int i = 0; i < medlemmer.size(); i++) {
+            Medlem medlem = medlemmer.get(i);
+            //iterrer gennem listen af medlemmer
+            if (medlem.getNavn().equalsIgnoreCase(input) || medlem.getID().equals(input)) {
+
+                boolean isEditing = true;
+
+                while (isEditing) {
+                    // Vis valgmuligheder for redigering
+                    System.out.println("Hvad vil du redigere?");
+                    System.out.println("1. Navn");
+                    System.out.println("2. Medlemskategori");
+                    System.out.println("3. Fødselsdato");
+                    System.out.println("4. Afslut redigering");
+                    int valg = sc.nextInt();
+                    sc.nextLine(); // Rens scanner
+                    System.out.println("Hvad vil du med: " + medlem + "'s profil?");
+                    System.out.println();
+                    switch (sc.nextInt()) {
+
+                        case 1:
+                            System.out.println("Hvad skal det nye fødselsår være på dit " + medlem);
+                            medlem.setFødselsdato(KonsolHandler.stringToLocalDate(sc.nextLine()));
+
+                        case 2:
+                            System.out.println("Indtast ny medlemskategori (AktivJunior, AktivSenior, PassivtMedlem):");
+                            String nyKategori = sc.nextLine.();
+
+                            // Behold gamle værdier
+                            String id = medlem.getID();
+                            String navn = medlem.getNavn();
+                            LocalDate fødselsdato = medlem.getFødselsdato();
+
+                            // Opret nyt objekt baseret på ny kategori
+                            Medlem nytMedlem;
+                            switch (nyKategori) {
+                                case "AktivJunior":
+                                    nytMedlem = new AktivJuniorMedlem(id, navn, fødselsdato, nyKategori);
+                                    nytMedlem.beregnKontingent();
+                                    break;
+                                case "AktivSenior":
+                                    nytMedlem = new AktivSeniorMedlem(id, navn, fødselsdato, nyKategori);
+                                    nytMedlem.beregnKontingent();
+                                    break;
+                                case "PassivtMedlem":
+                                    nytMedlem = new PassivtMedlem(id, navn, fødselsdato, nyKategori);
+                                    nytMedlem.beregnKontingent();
+                                    break;
+                                default:
+                                    System.out.println("Ugyldig kategori! Ingen ændringer foretaget.");
+                                    continue;
+                            }
+
+                            // Udskift det gamle objekt med det nye
+                            medlemmer.set(i, nytMedlem);
+                            System.out.println("Medlemskategori opdateret.");
+                            break;
+
+                        case 3:
+                            System.out.println("Indtast ny fødselsdato (format: YYYY-MM-DD):");
+                            String nyDato = sc.nextLine();
+                            medlem.setFødselsdato(nyDato);
+                            break;
+
+                        case 4:
+                            isEditing = false;
+                            System.out.println("Redigering afsluttet.");
+                            break;
+
+                        default:
+                            System.out.println("Ugyldigt valg, prøv igen.");
+
+                    }
+
+                }
+                gemAlleMedlemmer(medlemmer);
+                System.out.println("ændringer er gemt!");
+                return;
+            }
+            System.out.println("ingen medlemmer fundet");
+
+        }
+
+    }
+
     /*
      her skaber vi bare filen med en tom struktur, hvis den ikke findes.
      */
-    public void initialiserFil() {
-        File file = new File(filNavn);
+        public void initialiserFil () {
+            File file = new File(filNavn);
 
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                System.out.println("Filen blev oprettet: " + filNavn);
-            } catch (IOException e) {
-                System.out.println("Fejl ved oprettelse af fil: " + e.getMessage());
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                    System.out.println("Filen blev oprettet: " + filNavn);
+                } catch (IOException e) {
+                    System.out.println("Fejl ved oprettelse af fil: " + e.getMessage());
+                }
             }
         }
     }
-}
