@@ -49,6 +49,10 @@ public class KonsolHandler {
             throw new IllegalArgumentException("Ugyldigt format. Indtast venligst dato i formatet dd/mm/yyyy");
         }
     }
+
+    public static String LocalDateToString(LocalDate dato) {
+        return dato.toString().split("-")[2] + "/" + dato.toString().split("-")[1] + "/" + dato.toString().split("-")[0];
+    }
 }
 
 
