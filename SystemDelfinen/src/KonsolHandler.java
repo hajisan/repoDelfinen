@@ -41,7 +41,7 @@ public class KonsolHandler {
         return medlem.getStævnetider();
     }
 
-    public LocalDate stringToLocalDate(String dato) {
+    public static LocalDate stringToLocalDate(String dato) {
         //Try-catch-blok der skal sørge for, at dato-Stringen er i formatet dd/mm/yyyy
         try {
             return LocalDate.of(Integer.parseInt(dato.split("/")[0]), Integer.parseInt(dato.split("/")[1]), Integer.parseInt(dato.split("/")[2]));

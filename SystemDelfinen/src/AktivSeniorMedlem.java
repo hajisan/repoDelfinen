@@ -7,7 +7,7 @@ public class AktivSeniorMedlem extends Medlem{ //Her laver vi en subklasse "Akti
 
     @Override
     public double beregnKontingent() {
-        int alder = LocalDate.now().getYear() - getFødselsDato().getYear(); //udregning for at finde alder
+        int alder = LocalDate.now().getYear() - getFødselsdato().getYear(); //udregning for at finde alder
         if (alder >= 60) {
             return 1600.0 * 0.75; // 25 % rabat for medlemmer over 60 år
         }

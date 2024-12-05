@@ -92,11 +92,11 @@ public abstract class Medlem {
         this.ID = ID;
     }
 
-    public LocalDate getFødselsDato() {
+    public LocalDate getFødselsdato() {
         return fødselsDato;
     }
 
-    public void setFødselsDato(LocalDate fødselsDato) {
+    public void setFødselsdato(LocalDate fødselsDato) {
         this.fødselsDato = fødselsDato;
     }
 
