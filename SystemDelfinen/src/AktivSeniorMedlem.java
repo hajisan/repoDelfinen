@@ -1,8 +1,8 @@
 import java.time.LocalDate; //importerer LocalDate
 public class AktivSeniorMedlem extends Medlem{ //Her laver vi en subklasse "AktivtSeniorMedlem" som extender "Medlem"
 
-    public AktivSeniorMedlem(String navn, String ID, LocalDate fødselsDato, String medlemsKategori){
-        super(navn,ID,fødselsDato,medlemsKategori); //her implementerer vi superklassen "Medlem"
+    public AktivSeniorMedlem(String navn, LocalDate fødselsDato, String medlemsKategori){
+        super(navn,fødselsDato,medlemsKategori); //her implementerer vi superklassen "Medlem"
     }
 
     @Override
