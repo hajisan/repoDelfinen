@@ -77,6 +77,15 @@ public class FilStyrer {
             System.out.println("Fejl ved tilføjelse af medlem: " + e.getMessage());
         }
     }
+    
+    public void sletMedlem(Medlem eksisterendeMedlem){
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); //læser eksisterende medlemmer
+        System.out.println("Medlem: " +"'"+ eksisterendeMedlem + "'" + " bliver slettet");
+        medlemmer.remove(eksisterendeMedlem); // indbygget ArrayList metode til at fjerne medlem
+        gemAlleMedlemmer(medlemmer); //her kalder vi metoden "gemAlleMedlemmer", så vi får en opdateret liste.
+        System.out.println("Medlemmet er slettet og listen er blevet opdateret");
+    }
+
 
     /*
      her skaber vi bare filen med en tom struktur, hvis den ikke findes.
