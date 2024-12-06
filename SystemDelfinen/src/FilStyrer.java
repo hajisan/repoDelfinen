@@ -132,15 +132,15 @@ public class FilStyrer {
                             Medlem nytMedlem;
                             switch (nyKategori) {
                                 case "AktivJunior":
-                                    nytMedlem = new AktivJuniorMedlem(navn, fødselsdato, nyKategori);
+                                    nytMedlem = new AktivJuniorMedlem(navn, fødselsdato, nyKategori, );
                                     nytMedlem.beregnKontingent();
                                     break;
                                 case "AktivSenior":
-                                    nytMedlem = new AktivSeniorMedlem(navn, fødselsdato, nyKategori);
+                                    nytMedlem = new AktivSeniorMedlem(navn, fødselsdato, nyKategori, );
                                     nytMedlem.beregnKontingent();
                                     break;
                                 case "PassivtMedlem":
-                                    nytMedlem = new PassivtMedlem( navn, fødselsdato, nyKategori);
+                                    nytMedlem = new PassivtMedlem( navn, fødselsdato, nyKategori, );
                                     nytMedlem.beregnKontingent();
                                     break;
                                 default:
