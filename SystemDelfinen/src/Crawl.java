@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Crawl extends Svømmedisciplin {
 
+    // Konstruktør
     public Crawl() {
         this.disciplinNavn = "Rygcrawl";
     }
@@ -39,7 +40,7 @@ public class Crawl extends Svømmedisciplin {
                 }
             }
         }
-        return Sort.top5Svømmere(String disciplin);
+        return SortTop5.top5Svømmere(String disciplin);
     }
 
      */
