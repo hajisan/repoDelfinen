@@ -180,6 +180,73 @@ public class FilStyrer {
 
     }
 
+    public void registrerStævneSvømmetid(String medlemId, String disciplin, double tid, String dato) {
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs medlemmer fra JSON-filen
+
+        for (Medlem medlem : medlemmer) {
+            if (medlem.getID().equals(medlemId)) { // Find det specifikke medlem
+                Svømmedisciplin svømmedisciplin;
+
+                // Opret instans af den relevante disciplin
+                switch (disciplin) {
+                    case "Rygcrawl":
+                        svømmedisciplin = new Crawl();
+                        break;
+                    case "Butterfly":
+                        svømmedisciplin = new Butterfly();
+                        break;
+                    default:
+                        System.out.println("Ugyldig disciplin!");
+                        return;
+                }
+
+                // Kald disciplinens registrerTid-metode
+                svømmedisciplin.registrerStævneTid(medlem, tid, dato);
+
+                // Gem opdateret liste tilbage i JSON-filen
+                gemAlleMedlemmer(medlemmer);
+                System.out.println("Tid registreret og gemt for medlem: " + medlem.getNavn());
+                return;
+            }
+        }
+
+        System.out.println("Medlem med ID " + medlemId + " blev ikke fundet.");
+    }
+
+    public void registrerTræningsSvømmetid(String medlemId, String disciplin, double tid, String dato) {
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs medlemmer fra JSON-filen
+
+        for (Medlem medlem : medlemmer) {
+            if (medlem.getID().equals(medlemId)) { // Find det specifikke medlem
+                Svømmedisciplin svømmedisciplin;
+
+                // Opret instans af den relevante disciplin
+                switch (disciplin) {
+                    case "Rygcrawl":
+                        svømmedisciplin = new Crawl();
+                        break;
+                    case "Butterfly":
+                        svømmedisciplin = new Butterfly();
+                        break;
+                    default:
+                        System.out.println("Ugyldig disciplin!");
+                        return;
+                }
+
+                // Kald disciplinens registrerTid-metode
+                svømmedisciplin.registrerTræningsTid(medlem, tid, dato);
+
+                // Gem opdateret liste tilbage i JSON-filen
+                gemAlleMedlemmer(medlemmer);
+                System.out.println("Tid registreret og gemt for medlem: " + medlem.getNavn());
+                return;
+            }
+        }
+
+        System.out.println("Medlem med ID " + medlemId + " blev ikke fundet.");
+    }
+
+
     /*
      her skaber vi bare filen med en tom struktur, hvis den ikke findes.
      */
