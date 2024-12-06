@@ -126,21 +126,22 @@ public class FilStyrer {
                             // Behold gamle værdier
                             String id = medlem.getID();
                             String navn = medlem.getNavn();
+                            String køn = medlem.getKøn();
                             LocalDate fødselsdato = medlem.getFødselsdato();
 
                             // Opret nyt objekt baseret på ny kategori
                             Medlem nytMedlem;
                             switch (nyKategori) {
                                 case "AktivJunior":
-                                    nytMedlem = new AktivJuniorMedlem(navn, fødselsdato, nyKategori, );
+                                    nytMedlem = new AktivJuniorMedlem(navn, fødselsdato, køn, nyKategori);
                                     nytMedlem.beregnKontingent();
                                     break;
                                 case "AktivSenior":
-                                    nytMedlem = new AktivSeniorMedlem(navn, fødselsdato, nyKategori, );
+                                    nytMedlem = new AktivSeniorMedlem(navn, fødselsdato,køn, nyKategori);
                                     nytMedlem.beregnKontingent();
                                     break;
                                 case "PassivtMedlem":
-                                    nytMedlem = new PassivtMedlem( navn, fødselsdato, nyKategori, );
+                                    nytMedlem = new PassivtMedlem( navn, fødselsdato, køn, nyKategori);
                                     nytMedlem.beregnKontingent();
                                     break;
                                 default:
@@ -180,55 +181,197 @@ public class FilStyrer {
 
     }
 
+    public void registrerStævneSvømmetid(String medlemId, String disciplin, double tid, String dato) {
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs medlemmer fra JSON-filen
+
+        for (Medlem medlem : medlemmer) {
+            if (medlem.getID().equals(medlemId)) { // Find det specifikke medlem
+                Svømmedisciplin svømmedisciplin;
+
+                // Opret instans af den relevante disciplin
+                switch (disciplin) {
+                    case "Rygcrawl":
+                        svømmedisciplin = new Crawl();
+                        break;
+                    case "Butterfly":
+                        svømmedisciplin = new Butterfly();
+                        break;
+                    case "Crawl":
+                        svømmedisciplin = new Crawl();
+                        break;
+                    case "Brystsvømning":
+                        svømmedisciplin = new Brystsvømning();
+                        break;
+
+                    default:
+                        System.out.println("Ugyldig disciplin!");
+                        return;
+                }
+
+                // Kald disciplinens registrerTid-metode
+                svømmedisciplin.registrerStævneTid(medlem, tid, dato);
+
+                // Gem opdateret liste tilbage i JSON-filen
+                gemAlleMedlemmer(medlemmer);
+                System.out.println("Tid registreret og gemt for medlem: " + medlem.getNavn());
+                return;
+            }
+        }
+
+        System.out.println("Medlem med ID " + medlemId + " blev ikke fundet.");
+    }
+
+    public void registrerTræningsSvømmetid(String medlemId, String disciplin, double tid, String dato) {
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs medlemmer fra JSON-filen
+
+        for (Medlem medlem : medlemmer) {
+            if (medlem.getID().equals(medlemId)) { // Find det specifikke medlem
+                Svømmedisciplin svømmedisciplin;
+
+                // Opret instans af den relevante disciplin
+                switch (disciplin) {
+                    case "Rygcrawl":
+                        svømmedisciplin = new Crawl();
+                        break;
+                    case "Butterfly":
+                        svømmedisciplin = new Butterfly();
+                        break;
+                    case "Crawl":
+                        svømmedisciplin = new Crawl();
+                        break;
+                    case "Brystsvømning":
+                        svømmedisciplin = new Brystsvømning();
+                        break;
+                    default:
+                        System.out.println("Ugyldig disciplin!");
+                        return;
+                }
+
+                // Kald disciplinens registrerTid-metode
+                svømmedisciplin.registrerTræningsTid(medlem, tid, dato);
+
+                // Gem opdateret liste tilbage i JSON-filen
+                gemAlleMedlemmer(medlemmer);
+                System.out.println("Tid registreret og gemt for medlem: " + medlem.getNavn());
+                return;
+            }
+        }
+
+        System.out.println("Medlem med ID " + medlemId + " blev ikke fundet.");
+    }
+
+    //SortDisciplin
+
+    public int visSvømmetider() {
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs medlemmer fra JSON
+        ArrayList<String> resultater = new ArrayList<>(); // Liste til at gemme visningsresultater
+
+        Scanner scanner = new Scanner(System.in);
+        String disciplinNavn;
+
+        // Bed brugeren om at vælge en disciplin
+        while (true) {
+            System.out.println("Vælg en disciplin:");
+            System.out.println("1. Crawl");
+            System.out.println("2. Butterfly");
+            System.out.println("3. Rygcrawl");
+            System.out.println("4. Brystsvømning");
+            System.out.print("Indtast dit valg (1-4): ");
+
+            int valg = scanner.nextInt();
+            scanner.nextLine(); // Rens scannerens buffer
+
+            switch (valg) {
+                case 1:
+                    disciplinNavn = "Crawl";
+                    break;
+                case 2:
+                    disciplinNavn = "Butterfly";
+                    break;
+                case 3:
+                    disciplinNavn = "Rygcrawl";
+                    break;
+                case 4:
+                    disciplinNavn = "Brystsvømning";
+                    break;
+                default:
+                    System.out.println("Ugyldigt valg. Prøv igen.");
+                    continue;
+            }
+            break; // Hvis valget er gyldigt, bryd ud af loop
+        }
+
+        // Gennemgå alle medlemmer for at finde svømmetider for den givne disciplin
+        for (Medlem medlem : medlemmer) {
+            for (Svømmetid tid : medlem.getSvømmetider()) {
+                if (tid.getDisciplin().equalsIgnoreCase(disciplinNavn)) {
+                    // Tilføj informationer til resultatlisten
+                    resultater.add("Navn: " + medlem.getNavn() +
+                            ", Disciplin: " + tid.getDisciplin() +
+                            ", Tid: " + tid.getTid() +
+                            " sekunder, Dato: " + tid.getDato());
+                }
+            }
+        }
+
+        // Sortér resultaterne ved hjælp af SorterAlle
+        resultater = SorterAlle.sorterResultater(resultater);
+
+        // Udskriv resultaterne
+        System.out.println("Svømmetider for disciplinen: " + disciplinNavn);
+        for (String resultat : resultater) {
+            System.out.println(resultat);
+        }
+
     /*
      her skaber vi bare filen med en tom struktur, hvis den ikke findes.
      */
-    public void initialiserFil() {
-        File file = new File(filNavn);
+        public void initialiserFil() {
+            File file = new File(filNavn);
 
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                System.out.println("Filen blev oprettet: " + filNavn);
-            } catch (IOException e) {
-                System.out.println("Fejl ved oprettelse af fil: " + e.getMessage());
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                    System.out.println("Filen blev oprettet: " + filNavn);
+                } catch (IOException e) {
+                    System.out.println("Fejl ved oprettelse af fil: " + e.getMessage());
+                }
             }
         }
-    }
 
 
-    // Læs ID-tælleren fra id_count.json
-    public int læsCurrentId() {
-        try (FileReader reader = new FileReader(idFilNavn)) {
-            Gson gson = new Gson();
-            idCount idCount = gson.fromJson(reader, idCount.class);
-            return idCount.getCurrentId(); // Returnere det akutelle ID
-        } catch (IOException e) {
-            System.out.println("Fejl ved læsning af ID-fil: " + e.getMessage());
-            return 1; // Hvis filen ikke findes, starter vi ID-tælleren fra 1
+        // Læs ID-tælleren fra id_count.json
+        public int læsCurrentId() {
+            try (FileReader reader = new FileReader(idFilNavn)) {
+                Gson gson = new Gson();
+                idCount idCount = gson.fromJson(reader, idCount.class);
+                return idCount.getCurrentId(); // Returnere det akutelle ID
+            } catch (IOException e) {
+                System.out.println("Fejl ved læsning af ID-fil: " + e.getMessage());
+                return 1; // Hvis filen ikke findes, starter vi ID-tælleren fra 1
+            }
+        }
+
+        // Opdatere ID-tælleren i, id_count.json
+        public void opdatereIdCount ( int nyId){
+            try (FileWriter writer = new FileWriter(idFilNavn)) {
+                Gson gson = new Gson();
+                idCount idCount = new idCount();
+                idCount.setCurrentId(nyId);
+                gson.toJson(idCount, writer); // Gem den nye ID-værdi i filen
+            } catch (IOException e) {
+                System.out.println("Fejl ved opdatering af ID-fil: " + e.getMessage());
+            }
+        }
+
+        // Genere et unikt ID
+        public String genereUniktId () {
+            int currentId = læsCurrentId(); // Læs det nuværende ID
+            String nyId = String.format("SKD%04d", currentId); // Formatere ID som DSF0001, DSF0002, osv.
+            opdatereIdCount(currentId + 1); // Opdatere ID-tælleren
+            return nyId; // Returnere det nye ID
         }
     }
-
-    // Opdatere ID-tælleren i, id_count.json
-    public void opdatereIdCount(int nyId) {
-        try (FileWriter writer = new FileWriter(idFilNavn)) {
-            Gson gson = new Gson();
-            idCount idCount = new idCount();
-            idCount.setCurrentId(nyId);
-            gson.toJson(idCount, writer); // Gem den nye ID-værdi i filen
-        } catch (IOException e) {
-            System.out.println("Fejl ved opdatering af ID-fil: " + e.getMessage());
-        }
-    }
-
-    // Genere et unikt ID
-    public String genereUniktId() {
-        int currentId = læsCurrentId(); // Læs det nuværende ID
-        String nyId = String.format("SKD%04d", currentId); // Formatere ID som DSF0001, DSF0002, osv.
-        opdatereIdCount(currentId + 1); // Opdatere ID-tælleren
-        return nyId; // Returnere det nye ID
-    }
-}
 
     
 

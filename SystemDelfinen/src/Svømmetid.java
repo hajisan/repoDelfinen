@@ -3,7 +3,7 @@ import java.time.LocalDate;
 
 public class Svømmetid {
     private Duration tid; // Tid som en Duration
-    private String disciplin; // Disciplin (fx Crawl, Butterfly)
+    private String disciplin; // Disciplin (fx Rygcrawl, Butterfly)
     private LocalDate dato; // Dato for svømmetiden
 
     // Constructor

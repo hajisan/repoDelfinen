@@ -1,6 +1,7 @@
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class KonsolHandler {
 
@@ -32,7 +33,7 @@ public class KonsolHandler {
     }
 
     //Returnerer en ArrayList af et givent medlems Svømmetider
-    public ArrayList<Svømmetid> visSvømmetider(Medlem medlem) {
+    public ArrayList<Svømmetid> visEtMedlemsSvømmetider(Medlem medlem) {
         return medlem.getSvømmetider();
     }
 
@@ -52,6 +53,115 @@ public class KonsolHandler {
 
     public static String LocalDateToString(LocalDate dato) {
         return dato.toString().split("-")[2] + "/" + dato.toString().split("-")[1] + "/" + dato.toString().split("-")[0];
+    }
+
+    // Startmenu til navigation
+    public void startMenu() {
+        Scanner scanner = new Scanner(System.in);
+        boolean isRunning = true;
+
+        while (isRunning) {
+            // Print menu
+            System.out.println(
+                    "Velkommen til medlemssystemet for SKD\n" +
+                    "1. Opret et nyt medlem\n" +
+                    "2. Tilføj træningstid til medlem\n" +
+                    "3. Tilføj stævnetider til medlem\n" +
+                    "4. Vis medlems svømmetider\n" +
+                    "5. Vis medlems stævnetider\n" +
+                    "6. Redigere oplysninger på et medlem\n" +
+                    "7. Backup af medlemslisten\n" +
+                    "8. Afslut program\n"
+                    );
+            System.out.print("\n Indtast dit valg: ");
+            int valg = scanner.nextInt();
+            scanner.nextLine(); // Ryd scanner
+
+            switch (valg) {
+                case 1: // Opret nyt medlem
+
+                    // Fornavn og efternavn
+                    System.out.print("Indtast fornavn: ");
+                    String forNavn = scanner.nextLine();
+                    System.out.print("Indtast efternavn: ");
+                    String efterNavn = scanner.nextLine();
+
+                    // Fødselsdato
+                    System.out.print("Indtast fødselsdato (dd/mm/yyyy): ");
+                    String fødselsdato = scanner.nextLine();
+
+                    // Telefonnummer
+                    System.out.print("Indtast telefonnummer: ");
+                    int telefonnummer = scanner.nextInt();
+                    scanner.nextLine(); // Ryd scanner
+
+                    // Mailadresse
+                    System.out.print("Indtast mailadresse: ");
+                    String mailadresse = scanner.nextLine();
+
+                    // Adresse input
+                    System.out.print("Indtast vejnavn og nummer: "); // Vejnavn
+                    String vejNavn = scanner.nextLine();
+                    System.out.print("Indtast postnummer: "); // Postnummer
+                    int postnummer = scanner.nextInt();
+                    scanner.nextLine(); // Ryd scanner
+                    System.out.print("Indtast bynavn: "); // Bynavn
+                    String byNavn = scanner.nextLine();
+
+                    // Passivt eller aktivt medlem
+                    System.out.print("Er det et aktivt eller passivt medlem: ");
+                    String medlemskategori = scanner.nextLine();
+
+                    // Opret medlem
+                    Medlem nytMedlem = opretMedlem(forNavn + " " + efterNavn, fødselsdato, medlemskategori);
+                    System.out.println("Medlem oprettet: " + nytMedlem);
+                    break;
+
+                case 2: // Tilføj træningstid til medlem
+                    // Kopir metoden
+                    // Søg efter medlem via navn eller
+                    // Implementer logik her
+                    break;
+
+                case 3:
+                    // Tilføj stævnetider til medlem
+                    // Implementer logik her
+                    break;
+
+                case 4:
+                    // Vis medlems svømmetider 
+                    // Implementer logik her
+                    break;
+
+                case 5:
+                    // Vis medlems stævnetider
+                    // Implementer logik her
+                    break;
+
+                case 6:
+                    // Redigere oplysninger på et medlem
+                    // Implementer logik her
+                    break;
+
+                case 7:
+                    // Backup af medlemslisten
+                    // Implementer logik her
+                    break;
+
+                case 8:
+                    // Afslut program
+                    isRunning = false;
+                    System.out.println("Programmet afsluttes.");
+                    break;
+
+                default:
+                    System.out.println("Ugyldigt valg. Prøv igen.");
+                    break;
+
+            }
+
+        }
+
     }
 }
 
