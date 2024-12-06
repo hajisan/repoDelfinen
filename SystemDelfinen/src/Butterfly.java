@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 
 public class Butterfly extends Svømmedisciplin {
-    public butterfly() {
-        super("butterfly");
+    public Butterfly() {
+        this.disciplinNavn = "butterfly";
     }
 
+    /*
     @Override
     public void registrerTræningsTid(Medlem medlem, double tid, String dato) {
         System.out.println("Registrerer tid for disciplinen: " + disciplinNavn);
@@ -21,6 +22,8 @@ public class Butterfly extends Svømmedisciplin {
         System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nySvømmetid);
     }
 
+
+
     @Override
     public ArrayList<Svømmetid> getTopResultater(ArrayList<Medlem> medlemmer) {
         ArrayList<Svømmetid> alleTider = new ArrayList<>();
@@ -33,6 +36,8 @@ public class Butterfly extends Svømmedisciplin {
                 }
             }
         }
-        return Sort.top5Svømmere(String disciplin);
+        return Sort.top5Svømmere(String disciplinNavn);
     }
+
+     */
 }

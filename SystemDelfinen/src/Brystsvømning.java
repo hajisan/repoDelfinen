@@ -3,9 +3,10 @@ import java.util.ArrayList;
 public class Brystsvømning extends Svømmedisciplin{
 
     public Brystsvømning() {
-        super("Brystsvømning");
+        this.disciplinNavn = "Brystsvømning";
     }
 
+    /*
     @Override
     public void registrerTræningsTid(Medlem medlem, double tid, String dato) {
         System.out.println("Registrerer tid for disciplinen: " + disciplinNavn);
@@ -22,6 +23,8 @@ public class Brystsvømning extends Svømmedisciplin{
         System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nySvømmetid);
     }
 
+
+
     @Override
     public ArrayList<Svømmetid> getTopResultater(ArrayList<Medlem> medlemmer) {
         ArrayList<Svømmetid> alleTider = new ArrayList<>();
@@ -36,4 +39,6 @@ public class Brystsvømning extends Svømmedisciplin{
         }
         return Sort.top5Svømmere(String disciplin);
     }
+
+     */
 }

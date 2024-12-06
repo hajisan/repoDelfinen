@@ -1,31 +1,103 @@
 import java.time.Duration;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.Scanner;
 
 abstract class Svømmedisciplin {
     protected String disciplinNavn;
-    protected ArrayList<Svømmetid> træningsResultat;
+    protected ArrayList<Svømmetid> træningsTider; // Liste over træningstider
+    protected ArrayList<Svømmetid> stævneTider; // Liste over stævnetider
+    protected Svømmetid bedsteTid;
+
+
 
     // Constructor
-    public Svømmedisciplin(String disciplinNavn) {
-        this.disciplinNavn = disciplinNavn;
-        this.træningsResultat = new ArrayList<>();
+    public Svømmedisciplin() {
+        this.træningsTider = new ArrayList<>();
+        this.stævneTider = new ArrayList<>();
     }
 
-    // Registrerer tiden for et medlem
-    public void registrerTid(Medlem medlem, Duration tid, String dato) {
-        if (medlem == null || tid == null) {
-            throw new IllegalArgumentException("Medlem eller tid må ikke være nul.");
+    public void registrerTræningsTid(Medlem medlem, Duration tid, LocalDate dato) {
+        System.out.println("Registrerer tid for disciplinen: " + disciplinNavn);
+        Svømmetid nySvømmetid = new Svømmetid(disciplinNavn, tid, dato);
+        medlem.tilføjTræningstid(nySvømmetid); //Kalder tilføj metoden får at gøre svømmetid en del af medlem
+        System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nySvømmetid);
+    }
+
+    public void registrerStævneTid(Medlem medlem, Duration tid, LocalDate dato, String lokalitet) {
+        System.out.println("Registrerer tid for disciplinen: " + disciplinNavn);
+        Stævnetid nyStævnetid = new Stævnetid(tid, disciplinNavn,  dato, lokalitet);
+        medlem.tilføjStævnetid(nyStævnetid);
+        System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nyStævnetid);
+    }
+
+    public ArrayList<Svømmetid> getTopResultater(ArrayList<Medlem> medlemmer) {
+        ArrayList<Svømmetid> alleTider = new ArrayList<>();
+
+        // Gå igennem alle medlemmer og hent tider for den givne disciplin
+        for (Medlem medlem : medlemmer) {
+            for (Svømmetid tid : medlem.getSvømmetider()) {
+                if (tid.getDisciplin().equals(disciplinNavn)) {
+                    alleTider.add(tid);
+                }
+            }
+        }
+        return Sort.top5Svømmere(String disciplinNavn);
+    }
+
+    public void registrerFlereTider(Medlem medlem) {
+        if (medlem == null) {
+            throw new IllegalArgumentException("Medlem må ikke være null.");
         }
 
-        // Opretter en ny Svømmetid og tilføjer den til disciplinens træningsresultater
-        Svømmetid svømmetid = new Svømmetid(tid, disciplinNavn, KonsolHandler.stringToLocalDate(dato));
-        medlem.tilføjTræningstid(svømmetid);  // Tilføj tid til medlemmet
-        træningsResultat.add(svømmetid);  // Tilføj tid til disciplinens liste
+        Scanner sc = new Scanner(System.in);
+        boolean tilføjFlere = true;
+
+        System.out.println("Registrerer flere tider for disciplin: " + disciplinNavn + " for medlem: " + medlem.getNavn());
+        while (tilføjFlere) {
+            try {
+                // Indtast tid
+                System.out.println("Indtast tid i minutter:");
+                long minutter = sc.nextLong();
+
+                System.out.println("Indtast tid i sekunder:");
+                long sekunder = sc.nextLong();
+                sc.nextLine(); // Rens scanner buffer
+
+                // Indtast dato
+                System.out.println("Indtast dato (dd/mm/yyyy):");
+                String datoInput = sc.nextLine();
+                LocalDate dato = KonsolHandler.stringToLocalDate(datoInput);
+
+                // Opret og tilføj svømmetid
+                Svømmetid nySvømmetid = new Svømmetid(Duration.ofMinutes(minutter).plusSeconds(sekunder), disciplinNavn, dato);
+                medlem.getSvømmetider().add(nySvømmetid);
+
+                System.out.println("Svømmetid tilføjet: " + formatDuration(nySvømmetid.getTid()) + " på dato: " + dato);
+
+                // Opdater bedste tid
+                opdaterBedsteTid(medlem);
+
+                // Spørg, om brugeren vil tilføje flere tider
+                System.out.println("Vil du tilføje flere tider? (ja/nej)");
+                String svar = sc.nextLine();
+                tilføjFlere = svar.equalsIgnoreCase("ja");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        System.out.println("Registrering af tider afsluttet for medlem: " + medlem.getNavn());
     }
 
-    // Returnerer topresultater (de bedste tider) - Implementeres af konkrete discipliner
-    public abstract ArrayList<Svømmetid> getTopResultater(int antal);
+    // Hjælpefunktion til at finde og opdatere den bedste tid
+    private void opdaterBedsteTid(Medlem medlem) {
+        Svømmetid bedsteTid = medlem.getSvømmetider().stream()
+                .filter(t -> t.getDisciplin().equalsIgnoreCase(disciplinNavn))
+                .min((t1, t2) -> t1.getTid().compareTo(t2.getTid()))
+                .orElse(null);
+
+    }
 
     // Hjælpefunktion til at formatere Duration som en læsbar streng
     private String formatDuration(Duration duration) {
@@ -37,5 +109,13 @@ abstract class Svømmedisciplin {
     // Returnerer disciplinens navn
     public String getDisciplinNavn() {
         return disciplinNavn;
+    }
+
+    public Svømmetid getBedsteTid() {
+        return bedsteTid;
+    }
+
+    public void setBedsteTid(Svømmetid bedsteTid) {
+        this.bedsteTid = bedsteTid;
     }
 }
