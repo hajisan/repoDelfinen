@@ -3,13 +3,13 @@ import java.time.LocalDate;
 
 public class Svømmetid {
     private Duration tid; // Tid som en Duration
-    private String disciplin; // Disciplin (fx Crawl, Butterfly)
+    private String disciplin; // Disciplin (fx Rygcrawl, Butterfly)
     private LocalDate dato; // Dato for svømmetiden
 
     // Constructor
-    public Svømmetid(Duration tid, String disciplin, LocalDate dato) {
-        this.tid = tid;
+    public Svømmetid( String disciplin, Duration tid, LocalDate dato) {
         this.disciplin = disciplin;
+        this.tid = tid;
         this.dato = dato;
     }
 
@@ -39,7 +39,7 @@ public class Svømmetid {
         Svømmetid nySvømmetid = new Svømmetid(nyTid, disciplin, dato);
 
         // Tilføj svømmetiden til medlemmets træningsresultater
-        medlem.getTræningsresultater().add(nySvømmetid);
+        medlem.getSvømmetider().add(nySvømmetid);
 
         // Feedback til konsollen
         System.out.println("Svømmetid tilføjet: " + formatDuration(nyTid) + " i " +
@@ -52,4 +52,5 @@ public class Svømmetid {
         long sekunder = duration.minusMinutes(minutter).getSeconds();
         return String.format("%02d:%02d", minutter, sekunder);
     }
+
 }
