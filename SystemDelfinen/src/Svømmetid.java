@@ -7,9 +7,9 @@ public class Svømmetid {
     private LocalDate dato; // Dato for svømmetiden
 
     // Constructor
-    public Svømmetid(Duration tid, String disciplin, LocalDate dato) {
-        this.tid = tid;
+    public Svømmetid( String disciplin, Duration tid, LocalDate dato) {
         this.disciplin = disciplin;
+        this.tid = tid;
         this.dato = dato;
     }
 
@@ -52,4 +52,5 @@ public class Svømmetid {
         long sekunder = duration.minusMinutes(minutter).getSeconds();
         return String.format("%02d:%02d", minutter, sekunder);
     }
+
 }

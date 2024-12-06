@@ -1,29 +1,32 @@
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 public class Crawl extends Svømmedisciplin {
 
     // Konstruktør
     public Crawl() {
-        super("Crawl");
+        this.disciplinNavn = "Rygcrawl";
     }
 
+
+    /*
     @Override
-    public void registrerTræningsTid(Medlem medlem, double tid, String dato) {
+    public void registrerTræningsTid(Medlem medlem, Duration tid, LocalDate dato) {
         System.out.println("Registrerer tid for disciplinen: " + disciplinNavn);
         Svømmetid nySvømmetid = new Svømmetid(disciplinNavn, tid, dato);
-        medlem.tilføjTræningstid(nySvømmetid);
+        medlem.tilføjTræningstid(nySvømmetid); //Kalder tilføj metoden får at gøre svømmetid en del af medlem
         System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nySvømmetid);
     }
 
-    @Override
-    public void registrerStævneTid(Medlem medlem, double tid, String dato) {
+    public void registrerStævneTid(Medlem medlem, Duration tid, LocalDate dato, String lokalitet) {
         System.out.println("Registrerer tid for disciplinen: " + disciplinNavn);
-        Svømmetid nySvømmetid = new Svømmetid(disciplinNavn, tid, dato);
-        medlem.tilføjStævnetid(nySvømmetid);
-        System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nySvømmetid);
+        Stævnetid nyStævnetid = new Stævnetid(tid, disciplinNavn,  dato, lokalitet);
+        medlem.tilføjStævnetid(nyStævnetid);
+        System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nyStævnetid);
     }
+
+
 
     @Override
     public ArrayList<Svømmetid> getTopResultater(ArrayList<Medlem> medlemmer) {
@@ -39,4 +42,6 @@ public class Crawl extends Svømmedisciplin {
         }
         return SortTop5.top5Svømmere(String disciplin);
     }
+
+     */
 }
