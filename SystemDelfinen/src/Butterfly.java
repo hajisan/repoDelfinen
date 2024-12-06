@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 
 public class Butterfly extends Svømmedisciplin {
-    public butterfly() {
-        super("butterfly");
+
+    // Konstruktør
+    public Butterfly() {
+        super("Butterfly");
     }
 
     @Override
@@ -33,6 +35,6 @@ public class Butterfly extends Svømmedisciplin {
                 }
             }
         }
-        return Sort.top5Svømmere(String disciplin);
+        return SortTop5.top5Svømmere(String disciplin);
     }
 }

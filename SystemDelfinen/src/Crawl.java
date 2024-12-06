@@ -4,8 +4,9 @@ import java.util.stream.Collectors;
 
 public class Crawl extends Svømmedisciplin {
 
+    // Konstruktør
     public Crawl() {
-        super("Rygcrawl");
+        super("Crawl");
     }
 
     @Override
@@ -36,6 +37,6 @@ public class Crawl extends Svømmedisciplin {
                 }
             }
         }
-        return Sort.top5Svømmere(String disciplin);
+        return SortTop5.top5Svømmere(String disciplin);
     }
 }

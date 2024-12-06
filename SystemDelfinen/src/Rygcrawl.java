@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Rygcrawl extends Svømmedisciplin {
 
-    //konstruktør
+    // Konstruktør
     public Rygcrawl() {
         super("Rygcrawl");
     }
@@ -35,6 +35,7 @@ public class Rygcrawl extends Svømmedisciplin {
                 }
             }
         }
-        return Sort.top5Svømmere(String disciplin);
+
+        return SortTop5.top5Svømmere(String disciplin);
     }
 }
