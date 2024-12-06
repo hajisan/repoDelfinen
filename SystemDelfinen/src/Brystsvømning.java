@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class Brystsvømning extends Svømmedisciplin{
 
+    // Konstruktør
     public Brystsvømning() {
         super("Brystsvømning");
     }
@@ -34,6 +35,6 @@ public class Brystsvømning extends Svømmedisciplin{
                 }
             }
         }
-        return Sort.top5Svømmere(String disciplin);
+        return SortTop5.top5Svømmere(String disciplin);
     }
 }
