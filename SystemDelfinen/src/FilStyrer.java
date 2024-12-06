@@ -20,7 +20,7 @@ public class FilStyrer {
      Læser JSON-filen som en String og konverterer det til en liste over Medlem-objekter.
      Returnerer ArrayList af Medlem-objekter.
      */
-    public ArrayList<Medlem> læsAlleMedlemmer() {
+    public static ArrayList<Medlem> læsAlleMedlemmer() {
         ArrayList<Medlem> medlemmer = new ArrayList<>();
         File file = new File(filNavn);
 
