@@ -32,7 +32,7 @@ public class KonsolHandler {
     }
 
     //Returnerer en ArrayList af et givent medlems Svømmetider
-    public ArrayList<Svømmetid> visSvømmetider(Medlem medlem) {
+    public ArrayList<Svømmetid> visEtMedlemsSvømmetider(Medlem medlem) {
         return medlem.getSvømmetider();
     }
 
