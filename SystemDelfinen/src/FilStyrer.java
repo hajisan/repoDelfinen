@@ -11,6 +11,12 @@ public class FilStyrer {
     private static final String idFilNavn = "id_count.json"; // Navn på JSON-filen
 
     public ArrayList<Medlem> læsAlleMedlemmer() {
+
+    /*
+     Læser JSON-filen som en String og konverterer det til en liste over Medlem-objekter.
+     Returnerer ArrayList af Medlem-objekter.
+     */
+    public static ArrayList<Medlem> læsAlleMedlemmer() {
         ArrayList<Medlem> medlemmer = new ArrayList<>();
         File file = new File(filNavn);
 
