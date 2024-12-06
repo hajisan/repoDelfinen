@@ -1,7 +1,7 @@
 import java.time.LocalDate; //importerer LocalDate
 public class PassivtMedlem extends Medlem{ //Her laver vi en subklasse "PassivtMedlem" som extender "Medlem"
-    public PassivtMedlem(String navn, LocalDate fødselsDato, String medlemsKategori){
-        super(navn, fødselsDato, medlemsKategori); //her implementerer vi superklassen "Medlem"
+    public PassivtMedlem(String navn, LocalDate fødselsDato, String køn, String medlemskategori){
+        super(navn, fødselsDato, køn, medlemskategori); //her implementerer vi superklassen "Medlem"
     }
 
     @Override

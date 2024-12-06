@@ -2,18 +2,19 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 // Abstrakt klasse som representerer et medlem
-public abstract class Medlem {  
+public abstract class Medlem {
     // Private instansvariabler for medlemsegenskaper
-    private String navn;
-    private String ID;
-    private LocalDate fødselsDato;
-    private String medlemsKategori;
+    protected String navn;
+    protected String ID;
+    protected String køn;
+    protected LocalDate fødselsDato;
+    protected String medlemsKategori;
     protected ArrayList<Svømmetid> træningstider;
     protected ArrayList<Stævnetid> stævnetider;
 
 
     // Konstruktør for at initialisere et Medlem-objekt
-    public Medlem(String navn, LocalDate fødselsDato, String medlemsKategori) {
+    public Medlem(String navn, LocalDate fødselsDato, String køn, String medlemsKategori) {
         // Tjekker om navnet er null eller tomt og kaster en IllegalArgumentException hvis det er tilfældet
         if (navn == null || navn.isEmpty()) {
             throw new IllegalArgumentException("Navn må ikke være tomt.");
@@ -21,20 +22,8 @@ public abstract class Medlem {
 
         this.navn = navn;
         //this.ID = ID;
+        this.køn = køn;
         this.fødselsDato = fødselsDato;
-        this.medlemsKategori = medlemsKategori;
-    }
-
-    // Konstruktør for at initialisere et Medlem-objekt
-    public Medlem(String navn, String fødselsDato, String medlemsKategori) {
-        // Tjekker om navnet er null eller tomt og kaster en IllegalArgumentException hvis det er tilfældet
-        if (navn == null || navn.isEmpty()) {
-            throw new IllegalArgumentException("Navn må ikke være tomt.");
-        }
-
-        this.navn = navn;
-        //this.ID = ID;
-        this.fødselsDato = KonsolHandler.stringToLocalDate(fødselsDato);
         this.medlemsKategori = medlemsKategori;
     }
 
@@ -49,7 +38,7 @@ public abstract class Medlem {
     }
 
     //Returnerer en specifik subklasseobjekt af Medlem-klassen baseret på ønsket medlemskategori og -fødselsdato
-    public static Medlem opretMedlem(String navn, LocalDate fødselsdato, String medlemskategori) {
+    public static Medlem opretMedlem(String navn, LocalDate fødselsdato, String køn, String medlemskategori) {
         //Minimerer risiko for fejlinput ved at fjerne case sensitivitet og unødvendige mellemrumsindtastninger
         medlemskategori = medlemskategori.toLowerCase().trim();
         switch (medlemskategori) {
@@ -57,22 +46,22 @@ public abstract class Medlem {
             case null:
                 throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
 
-            //Kaster en IllegalArgumentException, hvis medlemskategori er en tom String
+                //Kaster en IllegalArgumentException, hvis medlemskategori er en tom String
             case "":
                 throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
 
-            //Hvis der er valgt et aktivt medlem, så vælges der mellem AktivJuniorMedlem og AktivSeniorMedlem baseret
-            //på, om medlemmet er over 18 år gammelt. Derefter returneres der et passende Medlem-objekt
+                //Hvis der er valgt et aktivt medlem, så vælges der mellem AktivJuniorMedlem og AktivSeniorMedlem baseret
+                //på, om medlemmet er over 18 år gammelt. Derefter returneres der et passende Medlem-objekt
             case "aktiv":
                 if (LocalDate.now().minusYears(18).isBefore(fødselsdato)) {
-                    return new AktivJuniorMedlem(navn, fødselsdato, medlemskategori);
+                    return new AktivJuniorMedlem(navn, fødselsdato, køn, medlemskategori);
                 } else {
-                    return new AktivSeniorMedlem(navn, fødselsdato, medlemskategori);
+                    return new AktivSeniorMedlem(navn, fødselsdato, køn, medlemskategori);
                 }
 
-            //Hvis der er valgt et passivt medlem, så returneres der et nyt PassivtMedlem-objekt
+                //Hvis der er valgt et passivt medlem, så returneres der et nyt PassivtMedlem-objekt
             case "passiv":
-                return new PassivtMedlem(navn, fødselsdato, medlemskategori);
+                return new PassivtMedlem(navn, fødselsdato, køn, medlemskategori);
 
             //Kaster en IllegalArgumentException, hvis der er indtastet en ikke-tom String der ikke specifikt er "aktiv" eller "passiv"
             default:
@@ -107,12 +96,24 @@ public abstract class Medlem {
         this.fødselsDato = fødselsDato;
     }
 
+    public String getKøn() {
+        return køn;
+    }
+
+    public void setKøn(String køn) {
+        this.køn = køn;
+    }
+
     public String getMedlemsKategori() {
         return medlemsKategori;
     }
 
     public void setMedlemsKategori(String medlemsKategori) {
         this.medlemsKategori = medlemsKategori;
+    }
+
+    public int getAlder() {
+        return LocalDate.now().getYear() - fødselsDato.getYear();
     }
 
     public ArrayList<Svømmetid> getSvømmetider() {
