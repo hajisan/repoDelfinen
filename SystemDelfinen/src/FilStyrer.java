@@ -70,73 +70,92 @@ public class FilStyrer {
             System.out.println("Medlemmet er slettet og listen er blevet opdateret");
         }
 
-        public void redigerMedlem () {
-            ArrayList<Medlem> medlemmer = læsAlleMedlemmer();
-            Scanner sc = new Scanner(System.in);
+    public void sletMedlem(Medlem eksisterendeMedlem) {
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer();
+        System.out.println("Medlem: " + "'" + eksisterendeMedlem + "'" + " bliver slettet");
+        medlemmer.remove(eksisterendeMedlem);
+        gemAlleMedlemmer(medlemmer);
+        System.out.println("Medlemmet er slettet og listen er blevet opdateret");
+    }
 
-            String input = sc.nextLine();
-            for (int i = 0; i < medlemmer.size(); i++) {
-                Medlem medlem = medlemmer.get(i);
-                if (medlem.getNavn().equalsIgnoreCase(input) || medlem.getID().equals(input)) {
-                    boolean isEditing = true;
+    public void redigerMedlem() {
+        ArrayList<Medlem> medlemmer = læsAlleMedlemmer();
+        Scanner sc = new Scanner(System.in);
 
-                    while (isEditing) {
-                        System.out.println("Hvad vil du redigere?");
-                        System.out.println("1. Navn");
-                        System.out.println("2. Medlemskategori");
-                        System.out.println("3. Fødselsdato");
-                        System.out.println("4. Afslut redigering");
-                        int valg = sc.nextInt();
-                        sc.nextLine();
+        String input = sc.nextLine();
+        for (int i = 0; i < medlemmer.size(); i++) {
+            Medlem medlem = medlemmer.get(i);
+            if (medlem.getNavn().equalsIgnoreCase(input) || medlem.getID().equals(input)) {
+                boolean isEditing = true;
 
-                        switch (valg) {
-                            case 1:
-                                System.out.println("Indtast nyt navn:");
-                                medlem.setNavn(sc.nextLine());
-                                break;
+                while (isEditing) {
+                    System.out.println("Hvad vil du redigere?");
+                    System.out.println("1. Navn");
+                    System.out.println("2. Medlemskategori");
+                    System.out.println("3. Fødselsdato");
+                    System.out.println("4. Afslut redigering");
+                    int valg = sc.nextInt();
+                    sc.nextLine();
 
-                            case 2:
-                                System.out.println("Indtast ny medlemskategori (AktivJunior, AktivSenior, PassivtMedlem):");
-                                String nyKategori = sc.nextLine();
-                                String id = medlem.getID();
-                                String navn = medlem.getNavn();
-                                String køn = medlem.getKøn();
-                                LocalDate fødselsdato = medlem.getFødselsdato();
-                                Medlem nytMedlem;
-                                switch (nyKategori) {
-                                    case "AktivJunior":
-                                        nytMedlem = new AktivJuniorMedlem(navn, fødselsdato, køn, nyKategori);
-                                        nytMedlem.beregnKontingent();
-                                        break;
-                                    case "AktivSenior":
-                                        nytMedlem = new AktivSeniorMedlem(navn, fødselsdato, køn, nyKategori);
-                                        nytMedlem.beregnKontingent();
-                                        break;
-                                    case "PassivtMedlem":
-                                        nytMedlem = new PassivtMedlem(navn, fødselsdato, køn, nyKategori);
-                                        nytMedlem.beregnKontingent();
-                                        break;
-                                    default:
-                                        System.out.println("Ugyldig kategori! Ingen ændringer foretaget.");
-                                        continue;
-                                }
-                                medlemmer.set(i, nytMedlem);
-                                System.out.println("Medlemskategori opdateret.");
-                                break;
+                    switch (valg) {
+                        case 1:
+                            System.out.println("Indtast nyt navn:");
+                            medlem.setNavn(sc.nextLine());
+                            break;
 
-                            case 3:
-                                System.out.println("Indtast ny fødselsdato (format: YYYY-MM-DD):");
-                                medlem.setFødselsdato(LocalDate.parse(sc.nextLine()));
-                                break;
+                        case 2:
+                            System.out.println("Indtast ny medlemskategori (AktivJunior, AktivSenior, PassivtMedlem):");
+                            String nyKategori = sc.nextLine();
+                            String navn = medlem.getNavn();
+                            LocalDate fødselsdato = medlem.getFødselsdato();
+                            Medlem nytMedlem;
+                            switch (nyKategori) {
+                                case "AktivJunior":
+                                    nytMedlem = new Medlem(navn, fødselsdato, nyKategori);
+                                    switch (nytMedlem.getMedlemsKategori()) {
+                                        case Medlemstyper.AKTIV_JUNIOR:
 
-                            case 4:
-                                isEditing = false;
-                                System.out.println("Redigering afsluttet.");
-                                break;
+                                            break;
+                                        case Medlemstyper.AKTIV_SENIOR:
 
-                            default:
-                                System.out.println("Ugyldigt valg, prøv igen.");
-                        }
+                                            break;
+                                        case Medlemstyper.AKTIV_SENIOR_60PLUS:
+
+                                            break;
+                                        case Medlemstyper.PASSIV:
+
+                                            break;
+                                    }
+                                    break;
+                                case "AktivSenior":
+                                    nytMedlem = new Medlem(navn, fødselsdato, nyKategori);
+                                    nytMedlem.beregnKontingent();
+                                    break;
+                                case "PassivtMedlem":
+                                    nytMedlem = new Medlem( navn, fødselsdato, nyKategori);
+                                    nytMedlem.beregnKontingent();
+                                    break;
+                                default:
+                                    System.out.println("Ugyldig kategori! Ingen ændringer foretaget.");
+                                    continue;
+                            }
+                            medlemmer.set(i, nytMedlem);
+                            System.out.println("Medlemskategori opdateret.");
+                            break;
+
+                        case 3:
+                            System.out.println("Indtast ny fødselsdato (format: YYYY-MM-DD):");
+                            medlem.setFødselsdato(LocalDate.parse(sc.nextLine()));
+                            break;
+
+                        case 4:
+                            isEditing = false;
+                            System.out.println("Redigering afsluttet.");
+                            break;
+
+                        default:
+                            System.out.println("Ugyldigt valg, prøv igen.");
+
                     }
                     gemAlleMedlemmer(medlemmer);
                     System.out.println("Ændringer er gemt!");
