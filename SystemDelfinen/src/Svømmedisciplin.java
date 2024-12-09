@@ -4,12 +4,10 @@ import java.time.LocalDate;
 import java.util.Scanner;
 
 abstract class Svømmedisciplin {
-    protected String disciplinNavn;
+    private disciplinNavne disciplinNavne; //Her bruges disciplinNavne enum klassen
     protected ArrayList<Svømmetid> træningsTider; // Liste over træningstider
     protected ArrayList<Svømmetid> stævneTider; // Liste over stævnetider
     protected Svømmetid bedsteTid;
-
-
 
     // Constructor
     public Svømmedisciplin() {
@@ -18,17 +16,17 @@ abstract class Svømmedisciplin {
     }
 
     public void registrerTræningsTid(Medlem medlem, Duration tid, LocalDate dato) {
-        System.out.println("Registrerer tid for disciplinen: " + disciplinNavn);
-        Svømmetid nySvømmetid = new Svømmetid(disciplinNavn, tid, dato);
+        System.out.println("Registrerer tid for disciplinen: " + disciplinNavne);
+        Svømmetid nySvømmetid = new Svømmetid(disciplinNavne, tid, dato);
         medlem.tilføjTræningstid(nySvømmetid); //Kalder tilføj metoden får at gøre svømmetid en del af medlem
-        System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nySvømmetid);
+        System.out.println("Registreret ny tid for " + disciplinNavne + ": " + nySvømmetid);
     }
 
     public void registrerStævneTid(Medlem medlem, Duration tid, LocalDate dato, String lokalitet) {
-        System.out.println("Registrerer tid for disciplinen: " + disciplinNavn);
-        Stævnetid nyStævnetid = new Stævnetid(tid, disciplinNavn,  dato, lokalitet);
+        System.out.println("Registrerer tid for disciplinen: " + disciplinNavne);
+        Stævnetid nyStævnetid = new Stævnetid(tid, disciplinNavne,  dato, lokalitet);
         medlem.tilføjStævnetid(nyStævnetid);
-        System.out.println("Registreret ny tid for " + disciplinNavn + ": " + nyStævnetid);
+        System.out.println("Registreret ny tid for " + disciplinNavne + ": " + nyStævnetid);
     }
 
     public ArrayList<Svømmetid> getTopResultater(ArrayList<Medlem> medlemmer) {
@@ -37,12 +35,12 @@ abstract class Svømmedisciplin {
         // Gå igennem alle medlemmer og hent tider for den givne disciplin
         for (Medlem medlem : medlemmer) {
             for (Svømmetid tid : medlem.getSvømmetider()) {
-                if (tid.getDisciplin().equals(disciplinNavn)) {
+                if (tid.getDisciplin().equals(disciplinNavne)) {
                     alleTider.add(tid);
                 }
             }
         }
-        return Sort.top5Svømmere(String disciplinNavn);
+        return Sort.top5Svømmere(String disciplinNavne);
     }
 
     public void registrerFlereTider(Medlem medlem) {
@@ -53,7 +51,7 @@ abstract class Svømmedisciplin {
         Scanner sc = new Scanner(System.in);
         boolean tilføjFlere = true;
 
-        System.out.println("Registrerer flere tider for disciplin: " + disciplinNavn + " for medlem: " + medlem.getNavn());
+        System.out.println("Registrerer flere tider for disciplin: " + disciplinNavne + " for medlem: " + medlem.getNavn());
         while (tilføjFlere) {
             try {
                 // Indtast tid
@@ -70,7 +68,7 @@ abstract class Svømmedisciplin {
                 LocalDate dato = KonsolHandler.stringToLocalDate(datoInput);
 
                 // Opret og tilføj svømmetid
-                Svømmetid nySvømmetid = new Svømmetid(Duration.ofMinutes(minutter).plusSeconds(sekunder), disciplinNavn, dato);
+                Svømmetid nySvømmetid = new Svømmetid(Duration.ofMinutes(minutter).plusSeconds(sekunder), disciplinNavne, dato);
                 medlem.getSvømmetider().add(nySvømmetid);
 
                 System.out.println("Svømmetid tilføjet: " + formatDuration(nySvømmetid.getTid()) + " på dato: " + dato);
@@ -93,7 +91,7 @@ abstract class Svømmedisciplin {
     // Hjælpefunktion til at finde og opdatere den bedste tid
     private void opdaterBedsteTid(Medlem medlem) {
         Svømmetid bedsteTid = medlem.getSvømmetider().stream()
-                .filter(t -> t.getDisciplin().equalsIgnoreCase(disciplinNavn))
+                .filter(t -> t.getDisciplin().equalsIgnoreCase(disciplinNavne))
                 .min((t1, t2) -> t1.getTid().compareTo(t2.getTid()))
                 .orElse(null);
 
@@ -108,7 +106,7 @@ abstract class Svømmedisciplin {
 
     // Returnerer disciplinens navn
     public String getDisciplinNavn() {
-        return disciplinNavn;
+        return disciplinNavne;
     }
 
     public Svømmetid getBedsteTid() {
