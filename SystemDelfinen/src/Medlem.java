@@ -6,7 +6,7 @@ public class Medlem {
     // Private instansvariabler for medlemsegenskaper
     protected String navn;
     protected LocalDate fødselsDato;
-    protected Enum<Medlemstyper> medlemstypeEnum;
+    protected Medlemstyper medlemstypeEnum;
     protected ArrayList<Svømmetid> træningstider;
     protected ArrayList<Stævnetid> stævnetider;
 
@@ -66,11 +66,15 @@ public class Medlem {
         this.fødselsDato = fødselsDato;
     }
 
+    public double getKontingent() {
+        return medlemstypeEnum.getKontingent();
+    }
+
     public Enum<Medlemstyper> getMedlemsKategori() {
         return medlemstypeEnum;
     }
 
-    public void setMedlemsKategori(Enum<Medlemstyper> type) {
+    public void setMedlemsKategori(Medlemstyper type) {
         this.medlemstypeEnum = type;
     }
 
