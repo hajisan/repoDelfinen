@@ -99,22 +99,33 @@ public class FilStyrer {
                         case 2:
                             System.out.println("Indtast ny medlemskategori (AktivJunior, AktivSenior, PassivtMedlem):");
                             String nyKategori = sc.nextLine();
-                            String id = medlem.getID();
                             String navn = medlem.getNavn();
-                            String køn = medlem.getKøn();
                             LocalDate fødselsdato = medlem.getFødselsdato();
                             Medlem nytMedlem;
                             switch (nyKategori) {
                                 case "AktivJunior":
-                                    nytMedlem = new AktivJuniorMedlem(navn, fødselsdato, køn, nyKategori);
-                                    nytMedlem.beregnKontingent();
+                                    nytMedlem = new Medlem(navn, fødselsdato, nyKategori);
+                                    switch (nytMedlem.getMedlemsKategori()) {
+                                        case Medlemstyper.AKTIV_JUNIOR:
+
+                                            break;
+                                        case Medlemstyper.AKTIV_SENIOR:
+
+                                            break;
+                                        case Medlemstyper.AKTIV_SENIOR_60PLUS:
+
+                                            break;
+                                        case Medlemstyper.PASSIV:
+
+                                            break;
+                                    }
                                     break;
                                 case "AktivSenior":
-                                    nytMedlem = new AktivSeniorMedlem(navn, fødselsdato,køn, nyKategori);
+                                    nytMedlem = new Medlem(navn, fødselsdato, nyKategori);
                                     nytMedlem.beregnKontingent();
                                     break;
                                 case "PassivtMedlem":
-                                    nytMedlem = new PassivtMedlem( navn, fødselsdato, køn, nyKategori);
+                                    nytMedlem = new Medlem( navn, fødselsdato, nyKategori);
                                     nytMedlem.beregnKontingent();
                                     break;
                                 default:
