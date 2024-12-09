@@ -2,32 +2,44 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 // Abstrakt klasse som representerer et medlem
-public abstract class Medlem {
+public class Medlem {
     // Private instansvariabler for medlemsegenskaper
     protected String navn;
-    protected String ID;
-    protected String køn;
     protected LocalDate fødselsDato;
-    protected String medlemsKategori;
+    protected Medlemstyper medlemstypeEnum;
     protected ArrayList<Svømmetid> træningstider;
     protected ArrayList<Stævnetid> stævnetider;
+    protected boolean restance = false;
 
 
     // Konstruktør for at initialisere et Medlem-objekt
-    public Medlem(String navn, LocalDate fødselsDato, String køn, String medlemsKategori) {
+    public Medlem(String navn, LocalDate fødselsDato, String medlemsKategori) {
         // Tjekker om navnet er null eller tomt og kaster en IllegalArgumentException hvis det er tilfældet
         if (navn == null || navn.isEmpty()) {
             throw new IllegalArgumentException("Navn må ikke være tomt.");
         }
-
         this.navn = navn;
-        //this.ID = ID;
-        this.køn = køn;
         this.fødselsDato = fødselsDato;
-        this.medlemsKategori = medlemsKategori;
-    }
 
-    public abstract double beregnKontingent();
+        switch (medlemsKategori.toLowerCase().trim()) {
+            case null: //Kaster en IllegalArgumentException, hvis medlemskategori er null
+                throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
+            case "": //Kaster en IllegalArgumentException, hvis medlemskategori er en tom String
+                throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
+            case "aktiv": //Sætter medlemmets medlemskab til det passende aktive medlemskab ud fra medlemmets fødselsdato
+                if (LocalDate.now().minusYears(18).isBefore(this.fødselsDato))
+                    this.medlemstypeEnum = Medlemstyper.AKTIV_JUNIOR;
+                else if (LocalDate.now().minusYears(18).isAfter(this.fødselsDato) &&
+                        LocalDate.now().minusYears(60).isBefore(this.fødselsDato))
+                    this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR;
+                else this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR_60PLUS;
+                break;
+            case "passiv": //Sætter medlemmets medlemskab til et passivt medlemskab
+                this.medlemstypeEnum = Medlemstyper.PASSIV;
+            default: //Kaster en Illegal ArgumentException, hvis man ikke vælger aktiv eller passiv
+                throw new IllegalArgumentException("Medlemskategori " + medlemsKategori + " kan ikke genkendes. Skriv venligst enten aktiv eller passiv.");
+        }
+    }
 
     public void tilføjTræningstid(Svømmetid træningstid) {
         this.træningstider.add(træningstid);
@@ -35,39 +47,6 @@ public abstract class Medlem {
 
     public void tilføjStævnetid(Stævnetid stævnetid) {
         this.stævnetider.add(stævnetid);
-    }
-
-    //Returnerer en specifik subklasseobjekt af Medlem-klassen baseret på ønsket medlemskategori og -fødselsdato
-    public static Medlem opretMedlem(String navn, LocalDate fødselsdato, String køn, String medlemskategori) {
-        //Minimerer risiko for fejlinput ved at fjerne case sensitivitet og unødvendige mellemrumsindtastninger
-        medlemskategori = medlemskategori.toLowerCase().trim();
-        switch (medlemskategori) {
-            //Kaster en IllegalArgumentException, hvis medlemskategori er null
-            case null:
-                throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
-
-                //Kaster en IllegalArgumentException, hvis medlemskategori er en tom String
-            case "":
-                throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
-
-                //Hvis der er valgt et aktivt medlem, så vælges der mellem AktivJuniorMedlem og AktivSeniorMedlem baseret
-                //på, om medlemmet er over 18 år gammelt. Derefter returneres der et passende Medlem-objekt
-            case "aktiv":
-                if (LocalDate.now().minusYears(18).isBefore(fødselsdato)) {
-                    return new AktivJuniorMedlem(navn, fødselsdato, køn, medlemskategori);
-                } else {
-                    return new AktivSeniorMedlem(navn, fødselsdato, køn, medlemskategori);
-                }
-
-                //Hvis der er valgt et passivt medlem, så returneres der et nyt PassivtMedlem-objekt
-            case "passiv":
-                return new PassivtMedlem(navn, fødselsdato, køn, medlemskategori);
-
-            //Kaster en IllegalArgumentException, hvis der er indtastet en ikke-tom String der ikke specifikt er "aktiv" eller "passiv"
-            default:
-                throw new IllegalArgumentException("Medlemskategori " + medlemskategori + " kan ikke genkendes. Skriv venligst enten aktiv eller passiv.");
-        }
-
     }
 
 
@@ -80,14 +59,6 @@ public abstract class Medlem {
         this.navn = navn;
     }
 
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
     public LocalDate getFødselsdato() {
         return fødselsDato;
     }
@@ -96,24 +67,28 @@ public abstract class Medlem {
         this.fødselsDato = fødselsDato;
     }
 
-    public String getKøn() {
-        return køn;
+    public double getKontingent() {
+        return medlemstypeEnum.getKontingent();
     }
 
-    public void setKøn(String køn) {
-        this.køn = køn;
+    public Medlemstyper getMedlemsKategori() {
+        return medlemstypeEnum;
     }
 
-    public String getMedlemsKategori() {
-        return medlemsKategori;
-    }
-
-    public void setMedlemsKategori(String medlemsKategori) {
-        this.medlemsKategori = medlemsKategori;
+    public void setMedlemsKategori(Medlemstyper type) {
+        this.medlemstypeEnum = type;
     }
 
     public int getAlder() {
         return LocalDate.now().getYear() - fødselsDato.getYear();
+    }
+
+    public boolean getRestance() {
+        return this.restance;
+    }
+
+    public void setRestance() {
+        this.restance = !this.restance;
     }
 
     public ArrayList<Svømmetid> getSvømmetider() {
@@ -128,9 +103,8 @@ public abstract class Medlem {
     public String toString() {
         return "Medlem{" +
                 "Navn: " + navn + "\n" +
-                "ID: " + ID + "\n" +
                 "Fødselsdato: " + fødselsDato + "\n" +
-                "Medlemskategori: " + medlemsKategori + "\n" +
+                "Medlemskategori: " + medlemstypeEnum + "\n" +
                 "}";
     }
 }

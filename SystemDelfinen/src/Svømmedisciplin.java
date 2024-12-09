@@ -90,7 +90,6 @@ abstract class Svømmedisciplin {
         System.out.println("Registrering af tider afsluttet for medlem: " + medlem.getNavn());
     }
 
-
 //    //Tasks 7.3, som er blevet slettet, metoden er blevet udkommenteret
 //    // Hjælpefunktion til at finde og opdatere den bedste tid
 //    private void opdaterBedsteTid(Medlem medlem) {
