@@ -21,13 +21,13 @@ public class KonsolHandler {
     }
 
     //Tilføjer en træningstid til det valgte medlem
-    public void tilføjSvømmetidTilMedlem(Medlem medlem, Duration tid, String disciplin, LocalDate dato) {
-        Svømmetid svømmetid = new Svømmetid(tid, disciplin, dato);
+    public void tilføjSvømmetidTilMedlem(Medlem medlem, Duration tid, disciplinNavne disciplin, LocalDate dato) {
+        Svømmetid svømmetid = new Svømmetid(disciplin, tid, dato);
         medlem.tilføjTræningstid(svømmetid);
     }
 
     //Tilføjer en Stævnetid til det valgte medlem
-    public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, String disciplin, LocalDate dato, String lokalitet) {
+    public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, disciplinNavne disciplin, LocalDate dato, String lokalitet) {
         Stævnetid stævnetid = new Stævnetid(tid, disciplin, dato, lokalitet);
         medlem.tilføjStævnetid(stævnetid);
     }
