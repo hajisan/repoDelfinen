@@ -7,16 +7,21 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class FilStyrer {
+
     private static final String filNavn = "AlleMedlemmer.csv"; // Navn på csv-filen
+
+
 
     /*
      Læser alle medlemmer fra CSV-filen.
      Formatet i filen skal være: Navn,Fødselsdato,Medlemskategori
      returnerer En ArrayList af Medlem-objekter læst fra filen
      */
+
     public static ArrayList<Medlem> læsAlleMedlemmer() {
         ArrayList<Medlem> medlemmer = new ArrayList<>();
         File file = new File(filNavn);
+
 
         // Tjekker om filen eksisterer
         if (!file.exists()) {
@@ -263,4 +268,3 @@ public class FilStyrer {
 
 }
 
->
