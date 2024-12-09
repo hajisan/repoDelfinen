@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 public class FilStyrer {
     private static final String filNavn = "AlleMedlemmer.json"; // Navn på JSON-filen
-    private static final String idFilNavn = "id_count.json"; // Navn på JSON-filen
 
     public ArrayList<Medlem> læsAlleMedlemmer() {
 
@@ -239,33 +238,5 @@ public class FilStyrer {
         }
     }
 
-    public int læsCurrentId() {
-        try (FileReader reader = new FileReader(idFilNavn)) {
-            Gson gson = new Gson();
-            idCount idCount = gson.fromJson(reader, idCount.class);
-            return idCount.getCurrentId();
-        } catch (IOException e) {
-            System.out.println("Fejl ved læsning af ID-fil: " + e.getMessage());
-            return 1;
-        }
-    }
-
-    public void opdatereIdCount(int nyId) {
-        try (FileWriter writer = new FileWriter(idFilNavn)) {
-            Gson gson = new Gson();
-            idCount idCount = new idCount();
-            idCount.setCurrentId(nyId);
-            gson.toJson(idCount, writer);
-        } catch (IOException e) {
-            System.out.println("Fejl ved opdatering af ID-fil: " + e.getMessage());
-        }
-    }
-
-    public String genereUniktId() {
-        int currentId = læsCurrentId();
-        String nyId = String.format("SKD%04d", currentId);
-        opdatereIdCount(currentId + 1);
-        return nyId;
-    }
 }
 
