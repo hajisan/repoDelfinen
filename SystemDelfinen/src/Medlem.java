@@ -70,7 +70,7 @@ public class Medlem {
         return medlemstypeEnum.getKontingent();
     }
 
-    public Enum<Medlemstyper> getMedlemsKategori() {
+    public Medlemstyper getMedlemsKategori() {
         return medlemstypeEnum;
     }
 
