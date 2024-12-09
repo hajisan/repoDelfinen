@@ -6,7 +6,7 @@ public class Medlem {
     // Private instansvariabler for medlemsegenskaper
     protected String navn;
     protected LocalDate fødselsDato;
-    protected Enum<Medlemstyper> medlemstypeEnum;
+    protected Medlemstyper medlemstypeEnum;
     protected ArrayList<Svømmetid> træningstider;
     protected ArrayList<Stævnetid> stævnetider;
 
@@ -66,7 +66,7 @@ public class Medlem {
         this.fødselsDato = fødselsDato;
     }
 
-    public Enum<Medlemstyper> getMedlemsKategori() {
+    public Medlemstyper getMedlemsKategori() {
         return medlemstypeEnum;
     }
 
