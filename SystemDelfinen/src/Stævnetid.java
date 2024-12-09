@@ -4,8 +4,8 @@ import java.time.LocalDate;
 public class Stævnetid extends Svømmetid{
     private String lokalitet;
 
-    public Stævnetid(Duration tid, disciplinNavne disciplin, LocalDate dato, String lokalitet) {
-        super(tid, disciplin, dato);
+    public Stævnetid(disciplinNavne disciplin, Duration tid, LocalDate dato, String lokalitet) {
+        super(disciplin, tid, dato);
         this.lokalitet = lokalitet;
     }
 

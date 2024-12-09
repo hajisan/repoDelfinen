@@ -1,20 +1,17 @@
-<import com.google.gson.Gson;
-
 import java.io.*;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class FilStyrer {
 
     private static final String filNavn = "AlleMedlemmer.csv"; // Navn på csv-filen
 
-
-
     /*
      Læser alle medlemmer fra CSV-filen.
-     Formatet i filen skal være: Navn,Fødselsdato,Medlemskategori
+     Formatet i filen skal være: Navn, Fødselsdato, Medlemskategori
      returnerer En ArrayList af Medlem-objekter læst fra filen
      */
 
@@ -179,73 +176,80 @@ public class FilStyrer {
         }
     }
 
-    /* public void registrerStævneSvømmetid(String medlemNavn, Enum<disciplinNavne> disciplinNavn, Duration tid, LocalDate dato, String lokalitet) {
-         ArrayList<Medlem> medlemmer = læsAlleMedlemmer();
+    // Læser svømmetider fra en CSV-fil og opdaterer medlemmernes data
+    public void læsSvømmetider(ArrayList<Medlem> medlemmer, String filNavn) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filNavn))) {
+            String line;
 
-         for (Medlem medlem : medlemmer) {
-             if (medlem.getNavn().equals(medlemNavn)) {
-                 Svømmedisciplin svømmedisciplin;
+            // Læs hver linje i CSV-filen
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
 
-                 switch (disciplinNavn) {
-                     case disciplinNavne.RYGCRAWL:
-                         svømmedisciplin = new Svømmedisciplin() {
-                         };
-                         break;
-                     case "Butterfly":
-                         svømmedisciplin = new Butterfly();
-                         break;
-                     case "Crawl":
-                         svømmedisciplin = new Crawl();
-                         break;
-                     case "Brystsvømning":
-                         svømmedisciplin = new Brystsvømning();
-                         break;
-                     default:
-                         System.out.println("Ugyldig disciplin!");
-                         return;
-                 }
+                // Udpak data
+                String medlemNavn = data[0];
+                disciplinNavne disciplin = disciplinNavne.valueOf(data[1]);
+                Duration tid = Duration.parse(data[2]);
+                LocalDate dato = LocalDate.parse(data[3]);
 
-                 svømmedisciplin.registrerStævneTid(medlem, tid, dato, lokalitet);
-                 gemAlleMedlemmer(medlemmer);
-                 System.out.println("Tid registreret og gemt for medlem: " + medlem.getNavn());
-                 return;
-             }
-         }
-         System.out.println("Medlem med ID " + medlemNavn + " blev ikke fundet.");
-     }
- */
-    public void registrerTræningsSvømmetid(String medlemNavn, String disciplin, Duration tid, LocalDate dato) {
-        ArrayList<Medlem> medlemmer = læsAlleMedlemmer();
+                // Find medlem baseret på navn
+                Medlem medlem = findMedlemByName(medlemmer, medlemNavn);
 
-        for (Medlem medlem : medlemmer) {
-            if (medlem.getNavn().equals(medlemNavn)) {
-                Svømmedisciplin svømmedisciplin;
+                // Find eller opret disciplin for medlemmet
+                Svømmedisciplin svømmedisciplin = medlem.findEllerOpretSvømmedisciplin(disciplin);
 
-                switch (disciplin) {
-                    case "Rygcrawl":
-                        svømmedisciplin = new Rygcrawl();
-                        break;
-                    case "Butterfly":
-                        svømmedisciplin = new Butterfly();
-                        break;
-                    case "Crawl":
-                        svømmedisciplin = new Crawl();
-                        break;
-                    case "Brystsvømning":
-                        svømmedisciplin = new Brystsvømning();
-                        break;
-                    default:
-                        System.out.println("Ugyldig disciplin!");
-                        return;
+                if (data.length == 5) { // Stævnetid (har lokalitet)
+                    String lokalitet = data[4];
+                    Stævnetid nyStævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
+                    svømmedisciplin.getStævneTider().add(nyStævnetid);
+                } else { // Træningstid
+                    Svømmetid nyTræningstid = new Svømmetid(disciplin, tid, dato);
+                    svømmedisciplin.getTræningsTider().add(nyTræningstid);
                 }
-
-                svømmedisciplin.registrerTræningsTid(medlem, tid, dato);
-                gemAlleMedlemmer(medlemmer);
-                System.out.println("Tid registreret og gemt for medlem: " + medlem.getNavn());
-                return;
             }
         }
-        System.out.println("Medlem med Navn " + medlemNavn + " blev ikke fundet.");
+    }
+
+
+    // Gemmer de 5 bedste trænings- og stævnetider til en CSV-fil
+    public void gemSvømmetider(ArrayList<Medlem> medlemmer, String filNavn) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filNavn))) {
+            // Gennemløb alle medlemmer
+            for (Medlem medlem : medlemmer) {
+                // Gennemgå hver disciplin for medlemmet
+                for (Svømmedisciplin disciplin : medlem.getSvømmediscipliner()) {
+                    // Gem de 5 bedste træningstider
+                    ArrayList<Svømmetid> bedsteTræningstider = disciplin.getTop5Træningstider();
+                    for (Svømmetid tid : bedsteTræningstider) {
+                        writer.write(medlem.getNavn() + "," +
+                                disciplin.getDisciplinNavn() + "," +
+                                tid.getTid() + "," +
+                                tid.getDato());
+                        writer.newLine();
+                    }
+
+                    // Gem de 5 bedste stævnetider
+                    ArrayList<Stævnetid> bedsteStævnetider = disciplin.getTop5Stævnetider();
+                    for (Stævnetid tid : bedsteStævnetider) {
+                        writer.write(medlem.getNavn() + "," +
+                                disciplin.getDisciplinNavn() + "," +
+                                tid.getTid() + "," +
+                                tid.getDato() + "," +
+                                tid.getLokalitet());
+                        writer.newLine();
+                    }
+                }
+            }
+        }
+    }
+
+    // Hjælpefunktion til at finde et medlem baseret på navn
+    private Medlem findMedlemByName(ArrayList<Medlem> medlemmer, String navn) {
+        for (Medlem medlem : medlemmer) {
+            if (medlem.getNavn().equalsIgnoreCase(navn)) {
+                return medlem;
+            }
+        }
+        throw new IllegalArgumentException("Medlem med navn " + navn + " blev ikke fundet.");
     }
 
     /*
