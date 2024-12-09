@@ -10,6 +10,8 @@ public class Medlem {
     protected ArrayList<Svømmetid> træningstider;
     protected ArrayList<Stævnetid> stævnetider;
     protected boolean restance = false;
+    protected static ArrayList<Svømmedisciplin> svømmediscipliner = new ArrayList<>();
+
 
 
     // Konstruktør for at initialisere et Medlem-objekt
@@ -39,6 +41,17 @@ public class Medlem {
             default: //Kaster en Illegal ArgumentException, hvis man ikke vælger aktiv eller passiv
                 throw new IllegalArgumentException("Medlemskategori " + medlemsKategori + " kan ikke genkendes. Skriv venligst enten aktiv eller passiv.");
         }
+    }
+
+    public Svømmedisciplin findEllerOpretSvømmedisciplin(disciplinNavne disciplin) {
+        for (Svømmedisciplin svømmedisciplin : svømmediscipliner) {
+            if (svømmedisciplin.getDisciplinNavn().equals(disciplin.name())) {
+                return svømmedisciplin;
+            }
+        }
+        Svømmedisciplin nyDisciplin = new Svømmedisciplin(disciplin);
+        svømmediscipliner.add(nyDisciplin);
+        return nyDisciplin;
     }
 
     public void tilføjTræningstid(Svømmetid træningstid) {
@@ -103,6 +116,8 @@ public class Medlem {
         return medlemstypeEnum;
     }
 
+
+
     // toString-metode for at returnere en String af et Medlem-objekt
     public String toString() {
         return "Medlem{" +
@@ -110,5 +125,10 @@ public class Medlem {
                 "Fødselsdato: " + KonsolHandler.LocalDateToString(fødselsDato) + "\n" +
                 "Medlemskategori: " + medlemstypeEnum + "\n" +
                 "}";
+    }
+
+
+    public static ArrayList<Svømmedisciplin> getSvømmediscipliner() {
+        return svømmediscipliner;
     }
 }

@@ -1,13 +1,15 @@
 import java.time.Duration;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Scanner;
 
-abstract class Svømmedisciplin {
+public class Svømmedisciplin {
     private disciplinNavne disciplin; //Her bruges disciplinNavne enum klassen
     protected ArrayList<Svømmetid> træningsTider; // Liste over træningstider
-    protected ArrayList<Svømmetid> stævneTider; // Liste over stævnetider
+    protected ArrayList<Stævnetid> stævneTider; // Liste over stævnetider
     protected Svømmetid bedsteTid;
+
 
     // Constructor
     public Svømmedisciplin(disciplinNavne disciplin) {
@@ -15,6 +17,7 @@ abstract class Svømmedisciplin {
         this.træningsTider = new ArrayList<>();
         this.stævneTider = new ArrayList<>();
     }
+
     //metode til at registrere træningstid
     public void registrerTræningsTid(Medlem medlem, Duration tid, LocalDate dato) {
         System.out.println("Registrerer tid for disciplinen: " + disciplin);
@@ -22,13 +25,15 @@ abstract class Svømmedisciplin {
         medlem.tilføjTræningstid(nySvømmetid); //Kalder tilføj metoden får at gøre svømmetid en del af medlem
         System.out.println("Registreret ny tid for " + disciplin + ": " + nySvømmetid);
     }
+
     //metode til at registrere stævnetid
     public void registrerStævneTid(Medlem medlem, Duration tid, LocalDate dato, String lokalitet) {
         System.out.println("Registrerer tid for disciplinen: " + disciplin);
-        Stævnetid nyStævnetid = new Stævnetid(tid, disciplin,  dato, lokalitet);
+        Stævnetid nyStævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
         medlem.tilføjStævnetid(nyStævnetid);
         System.out.println("Registreret ny tid for " + disciplin + ": " + nyStævnetid);
     }
+
     //metode til at få top 5
     public ArrayList<Svømmetid> getTopResultater(ArrayList<Medlem> medlemmer) {
         ArrayList<Svømmetid> alleTider = new ArrayList<>();
@@ -43,6 +48,7 @@ abstract class Svømmedisciplin {
         }
         return (ArrayList<Svømmetid>) SortTop5.top5Svømmere(disciplin); //sortering af resultater
     }
+
     //metode til at registrere flere tider for et medlem
     public void registrerFlereTider(Medlem medlem) {
         if (medlem == null) {
@@ -117,5 +123,26 @@ abstract class Svømmedisciplin {
 
     public void setBedsteTid(Svømmetid bedsteTid) {
         this.bedsteTid = bedsteTid;
+    }
+
+    // Returnerer de 5 bedste træningstider
+    public ArrayList<Svømmetid> getTop5Træningstider() {
+        træningsTider.sort(Comparator.comparing(Svømmetid::getTid));
+        return new ArrayList<>(træningsTider.subList(0, Math.min(5, træningsTider.size())));
+    }
+
+    // Returnerer de 5 bedste stævnetider
+    public ArrayList<Stævnetid> getTop5Stævnetider() {
+        stævneTider.sort(Comparator.comparing(Svømmetid::getTid));
+        return new ArrayList<>(stævneTider.subList(0, Math.min(5, stævneTider.size())));
+    }
+
+
+    public ArrayList<Stævnetid> getStævneTider() {
+        return stævneTider;
+    }
+
+    public ArrayList<Svømmetid> getTræningsTider() {
+        return træningsTider;
     }
 }

@@ -12,7 +12,7 @@ public class KonsolHandler {
 
     //Opretter et nyt medlem med Factory-metoden fra Medlem-klassen
     public Medlem opretMedlem(String navn, String fødselsdato, String medlemskategori) {
-        return Medlem.opretMedlem(navn, stringToLocalDate(fødselsdato), medlemskategori);
+        return new Medlem(navn, stringToLocalDate(fødselsdato), medlemskategori);
     }
 
     //Tilføjer en tid til det valgte medlem ud fra tid i sekunder og millisekunder
@@ -28,7 +28,7 @@ public class KonsolHandler {
 
     //Tilføjer en Stævnetid til det valgte medlem
     public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, disciplinNavne disciplin, LocalDate dato, String lokalitet) {
-        Stævnetid stævnetid = new Stævnetid(tid, disciplin, dato, lokalitet);
+        Stævnetid stævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
         medlem.tilføjStævnetid(stævnetid);
     }
 
