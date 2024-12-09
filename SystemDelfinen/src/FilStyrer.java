@@ -9,13 +9,13 @@ import java.util.Scanner;
 public class FilStyrer {
     private static final String filNavn = "AlleMedlemmer.json"; // Navn på JSON-filen
 
-    public ArrayList<Medlem> læsAlleMedlemmer() {
+    public static ArrayList<Medlem> læsAlleMedlemmer() {
 
     /*
      Læser JSON-filen som en String og konverterer det til en liste over Medlem-objekter.
      Returnerer ArrayList af Medlem-objekter.
      */
-        public static ArrayList<Medlem> læsAlleMedlemmer () {
+
             ArrayList<Medlem> medlemmer = new ArrayList<>();
             File file = new File(filNavn);
 
@@ -69,14 +69,6 @@ public class FilStyrer {
             gemAlleMedlemmer(medlemmer);
             System.out.println("Medlemmet er slettet og listen er blevet opdateret");
         }
-
-    public void sletMedlem(Medlem eksisterendeMedlem) {
-        ArrayList<Medlem> medlemmer = læsAlleMedlemmer();
-        System.out.println("Medlem: " + "'" + eksisterendeMedlem + "'" + " bliver slettet");
-        medlemmer.remove(eksisterendeMedlem);
-        gemAlleMedlemmer(medlemmer);
-        System.out.println("Medlemmet er slettet og listen er blevet opdateret");
-    }
 
     public void redigerMedlem() {
         ArrayList<Medlem> medlemmer = læsAlleMedlemmer();

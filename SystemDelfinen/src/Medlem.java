@@ -9,6 +9,7 @@ public class Medlem {
     protected Medlemstyper medlemstypeEnum;
     protected ArrayList<Svømmetid> træningstider;
     protected ArrayList<Stævnetid> stævnetider;
+    protected boolean restance = false;
 
 
     // Konstruktør for at initialisere et Medlem-objekt
@@ -80,6 +81,14 @@ public class Medlem {
 
     public int getAlder() {
         return LocalDate.now().getYear() - fødselsDato.getYear();
+    }
+
+    public boolean getRestance() {
+        return this.restance;
+    }
+
+    public void setRestance() {
+        this.restance = !this.restance;
     }
 
     public ArrayList<Svømmetid> getSvømmetider() {
