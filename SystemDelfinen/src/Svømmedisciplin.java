@@ -9,8 +9,6 @@ abstract class Svømmedisciplin {
     protected ArrayList<Svømmetid> stævneTider; // Liste over stævnetider
     protected Svømmetid bedsteTid;
 
-
-
     // Constructor
     public Svømmedisciplin() {
         this.træningsTider = new ArrayList<>();
@@ -90,14 +88,14 @@ abstract class Svømmedisciplin {
         System.out.println("Registrering af tider afsluttet for medlem: " + medlem.getNavn());
     }
 
-    // Hjælpefunktion til at finde og opdatere den bedste tid
-    private void opdaterBedsteTid(Medlem medlem) {
-        Svømmetid bedsteTid = medlem.getSvømmetider().stream()
-                .filter(t -> t.getDisciplin().equalsIgnoreCase(disciplinNavn))
-                .min((t1, t2) -> t1.getTid().compareTo(t2.getTid()))
-                .orElse(null);
-
-    }
+//    //Tasks 7.3, som er blevet slettet, metoden er blevet udkommenteret
+//    // Hjælpefunktion til at finde og opdatere den bedste tid
+//    private void opdaterBedsteTid(Medlem medlem) {
+//        Svømmetid bedsteTid = medlem.getSvømmetider().stream()
+//                .filter(t -> t.getDisciplin().equalsIgnoreCase(disciplinNavn))
+//                .min((t1, t2) -> t1.getTid().compareTo(t2.getTid()))
+//                .orElse(null);
+//    }
 
     // Hjælpefunktion til at formatere Duration som en læsbar streng
     private String formatDuration(Duration duration) {
