@@ -66,11 +66,15 @@ public class Medlem {
         this.fødselsDato = fødselsDato;
     }
 
+    public double getKontingent() {
+        return medlemstypeEnum.getKontingent();
+    }
+
     public Medlemstyper getMedlemsKategori() {
         return medlemstypeEnum;
     }
 
-    public void setMedlemsKategori(Enum<Medlemstyper> type) {
+    public void setMedlemsKategori(Medlemstyper type) {
         this.medlemstypeEnum = type;
     }
 
