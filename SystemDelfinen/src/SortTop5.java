@@ -9,7 +9,7 @@ public class SortTop5 {
     public SortTop5() {
     }
 
-    public List<Svømmetid> top5Svømmere(List<Svømmetid> alleTider) {
+    public static List<Svømmetid> top5Svømmere(disciplinNavne alleTider) {
         // Sortere tiden i aftagende rækkefølge (bedste tid først) og viser top 5 svømmere og tider
         return alleTider.stream()
                 .sorted(Comparator.comparing(Svømmetid::getTid)) // Sort by time (laveste først)
