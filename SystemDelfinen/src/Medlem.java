@@ -86,11 +86,15 @@ public class Medlem {
         return stævnetider;
     }
 
+    public Enum<Medlemstyper> getMedlemstypeEnum() {
+        return medlemstypeEnum;
+    }
+
     // toString-metode for at returnere en String af et Medlem-objekt
     public String toString() {
         return "Medlem{" +
                 "Navn: " + navn + "\n" +
-                "Fødselsdato: " + fødselsDato + "\n" +
+                "Fødselsdato: " + KonsolHandler.LocalDateToString(fødselsDato) + "\n" +
                 "Medlemskategori: " + medlemstypeEnum + "\n" +
                 "}";
     }
