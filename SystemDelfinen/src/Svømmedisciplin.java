@@ -46,7 +46,7 @@ public class Svømmedisciplin {
                 }
             }
         }
-        return (ArrayList<Svømmetid>) SortTop5.top5Svømmere(disciplin); //sortering af resultater
+        return SortTop5.top5Svømmere(alleTider); //sortering af resultater
     }
 
     //metode til at registrere flere tider for et medlem
