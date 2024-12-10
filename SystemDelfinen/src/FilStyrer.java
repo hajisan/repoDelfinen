@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class FilStyrer {
 
-    private static final String filNavn = "AlleMedlemmer.csv"; // Navn på csv-filen
+    private static final String filNavn = "src/AlleMedlemmer.csv"; // Navn på csv-filen
 
     /*
      Læser alle medlemmer fra CSV-filen.
@@ -15,51 +15,61 @@ public class FilStyrer {
      returnerer En ArrayList af Medlem-objekter læst fra filen
      */
 
+    // Læs alle medlemmer fra CSV-filen
     public static ArrayList<Medlem> læsAlleMedlemmer() {
         ArrayList<Medlem> medlemmer = new ArrayList<>();
         File file = new File(filNavn);
 
-
-        // Tjekker om filen eksisterer
         if (!file.exists()) {
             System.out.println("Filen findes ikke. Returnerer en tom liste.");
             return medlemmer;
         }
 
-        // Læser fra filen
+
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            boolean isFirstLine = true; // Spring header-linjen over
 
+            //her går vi ind og aflæser hver linje. Da det er CSV (comma seperated version), er hver data imellem kommaer
             while ((line = reader.readLine()) != null) {
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue; // Spring header-linje over
-                }
-
-                // Split linjen i datafelter
                 String[] parts = line.split(",");
-                if (parts.length < 3) { // Sørger for at alle linjer er gyldige
-                    System.out.println("Ugyldig linje i CSV: " + line);
-                    continue;
-                }
+                if (parts[0].equalsIgnoreCase("Medlem")) {
+                    // Læs medlem
+                    String navn = parts[1].trim(); //på plads 1 har vi navn
+                    LocalDate fødselsdato = KonsolHandler.stringToLocalDate(parts[2].trim()); //fødselsdagsdato der laves om til string
+                    String medlemskategori = parts[3].trim(); //er du aktiv eller passivt medlem? junior eller senior?
+                    medlemmer.add(new Medlem(navn, fødselsdato, medlemskategori)); //tilføjer medlemmet til arraylsiten medlemmer
+                } else if (parts[0].equalsIgnoreCase("Træningstid")) {
+                    // Læs træningstid
+                    String navn = parts[1].trim(); //Vi tager navnet på medlemmet
+                    disciplinNavne disciplin = disciplinNavne.valueOf(parts[2].trim()); //Hvilken disciplin har de deltaget i
+                    Duration tid = Duration.ofSeconds(Long.parseLong(parts[3].trim())); //hvor hurtgige var de
+                    LocalDate dato = KonsolHandler.stringToLocalDate(parts[4].trim()); // datoen hvor på det skete i let læseligt format
 
-                try {
-                    // Læs data fra CSV-linjen
-                    String navn = parts[0].trim();
-                    LocalDate fødselsdato = KonsolHandler.stringToLocalDate(parts[1].trim());
-                    String medlemskategori = parts[2].trim();
+                    Medlem medlem = findMedlemByName(medlemmer, navn); //den her mini metode, er bare for at finde det rigtige medlem
+                    // og tilføje den disciplin og tid til dem
+                    if (medlem != null) {
+                        Svømmetid svømmetid = new Svømmetid(disciplin, tid, dato);
+                        medlem.tilføjTræningstid(svømmetid);
+                    }
+                } else if (parts[0].equalsIgnoreCase("Stævnetid")) {
+                    // Læs stævnetid
+                    String navn = parts[1].trim();
+                    disciplinNavne disciplin = disciplinNavne.valueOf(parts[2].trim());
+                    Duration tid = Duration.ofSeconds(Long.parseLong(parts[3].trim()));
+                    LocalDate dato = KonsolHandler.stringToLocalDate(parts[4].trim());
+                    String lokalitet = parts[5].trim(); //her er det det samme som træningstider, der er bare også en string for lokalitet
 
-                    // Opret Medlem-objekt
-                    Medlem medlem = new Medlem(navn, fødselsdato, medlemskategori);
-                    medlemmer.add(medlem);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Fejl i linje: " + line + ". " + e.getMessage());
+                    Medlem medlem = findMedlemByName(medlemmer, navn);
+                    if (medlem != null) {
+                        Stævnetid stævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
+                        medlem.tilføjStævnetid(stævnetid);
+                    }
                 }
             }
         } catch (IOException e) {
             System.out.println("Fejl ved læsning af fil: " + e.getMessage());
         }
+
 
         return medlemmer;
     }
@@ -68,23 +78,39 @@ public class FilStyrer {
      Gemmer alle medlemmer til CSV-filen
      Laver en ArrayList af Medlem-objekter, der skal gemmes
      */
+    // Gem alle medlemmer til CSV-filen
     public void gemAlleMedlemmer(ArrayList<Medlem> medlemmer) {
         File file = new File(filNavn);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            // Skriv header-linje
-            writer.write("Navn,Fødselsdato,Medlemskategori");
-            writer.newLine();
-
-            // Skriv hver medlemsdata til filen
-            for (Medlem medlem : medlemmer) {
-                writer.write(medlem.getNavn() + "," +
+            for (Medlem medlem : medlemmer) { //For each loop der iterer gennem vores array af medlemmer
+                // Gem medlem
+                writer.write("Medlem," + medlem.getNavn() + "," +
                         KonsolHandler.LocalDateToString(medlem.getFødselsdato()) + "," +
-                        medlem.getMedlemstypeEnum());
-                writer.newLine();
+                        medlem.getMedlemstypeEnum());// her skrives informationen ind i CSV filen i det
+                writer.newLine(); // her går vi videre til næste linje
+
+                // Gem træningstider
+                for (Svømmetid træningstid : medlem.getSvømmetider()) { //For each loop, for svømmetider,
+                    writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                            træningstid.getDisciplin() + "," +
+                            træningstid.getTid().toSeconds() + "," +
+                            KonsolHandler.LocalDateToString(træningstid.getDato()));
+                    writer.newLine(); // Ny linje i CSV-filen
+                }
+
+                // Gem stævnetider
+                for (Stævnetid stævnetid : medlem.getStævnetider()) { //For each loop, for stævnetider
+                    writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer stævne tid
+                            stævnetid.getDisciplin() + "," +
+                            stævnetid.getTid().toSeconds() + "," +
+                            KonsolHandler.LocalDateToString(stævnetid.getDato()) + "," +
+                            stævnetid.getLokalitet());
+                    writer.newLine(); //Ny linje
+                }
             }
 
-            System.out.println("Data er gemt til filen: " + filNavn);
+            System.out.println("Data gemt til CSV-filen: " + filNavn);
         } catch (IOException e) {
             System.out.println("Fejl ved skrivning til fil: " + e.getMessage());
         }
@@ -109,7 +135,7 @@ public class FilStyrer {
         ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs eksisterende medlemmer
 
         // Forsøg at fjerne medlemmet
-        if (medlemmer.removeIf(m -> m.getNavn().equalsIgnoreCase(eksisterendeMedlem.getNavn()))) {
+        if (medlemmer.removeIf(m -> m.getNavn().equalsIgnoreCase(eksisterendeMedlem.getNavn()))) { //hvis det indtastet navn er = med et eksisterende medlem, så fjern det
             gemAlleMedlemmer(medlemmer); // Gem ændringer til filen
             System.out.println("Medlemmet er slettet og listen er blevet opdateret.");
         } else {
@@ -129,12 +155,12 @@ public class FilStyrer {
         String input = sc.nextLine();
         boolean medlemFundet = false;
 
-        for (Medlem medlem : medlemmer) {
-            if (medlem.getNavn().equalsIgnoreCase(input)) {
-                medlemFundet = true;
-                boolean isEditing = true;
+        for (Medlem medlem : medlemmer) { //vi iterer gennem listen af medlemmer
+            if (medlem.getNavn().equalsIgnoreCase(input)) { //sammenligner det med eksisterende nanvne
+                medlemFundet = true;//hvis det findes er er denne sat til true og
+                boolean isEditing = true; //denne sættes til true
 
-                while (isEditing) {
+                while (isEditing) { //så starter vores do while loop
                     System.out.println("Hvad vil du redigere?");
                     System.out.println("1. Navn");
                     System.out.println("2. Medlemskategori");
@@ -168,7 +194,7 @@ public class FilStyrer {
             }
         }
 
-        if (medlemFundet) {
+        if (medlemFundet) { //hvis medlemmet eksisterer gemmer vi så ændringene
             gemAlleMedlemmer(medlemmer); // Gem ændringer
             System.out.println("Ændringer gemt.");
         } else {
@@ -243,7 +269,7 @@ public class FilStyrer {
     }
 
     // Hjælpefunktion til at finde et medlem baseret på navn
-    private Medlem findMedlemByName(ArrayList<Medlem> medlemmer, String navn) {
+    private static Medlem findMedlemByName(ArrayList<Medlem> medlemmer, String navn) {
         for (Medlem medlem : medlemmer) {
             if (medlem.getNavn().equalsIgnoreCase(navn)) {
                 return medlem;
@@ -253,7 +279,7 @@ public class FilStyrer {
     }
 
     /*
-     Initialiserer CSV-filen, hvis den ikke allerede eksisterer.
+     Initialiserer CSV-filen, hvis den ikke allerede eksisterer. Bare til backup for andre
      */
     public void initialiserFil() {
         File file = new File(filNavn);
