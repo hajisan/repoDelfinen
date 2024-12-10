@@ -50,7 +50,7 @@ public class Svømmetid {
     private static String formatDuration(Duration duration) {
         long minutter = duration.toMinutes();
         long sekunder = duration.minusMinutes(minutter).getSeconds();
-        return String.format("%02d:%02d", minutter, sekunder);
+        return String.format("%02d:%02d", minutter, sekunder); //%02d betyder, at heltallet skal være mindst to cifre langt.
     }
 
 }

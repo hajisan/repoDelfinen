@@ -30,7 +30,7 @@ public class Svømmedisciplin {
     public void registrerStævneTid(Medlem medlem, Duration tid, LocalDate dato, String lokalitet) {
         System.out.println("Registrerer tid for disciplinen: " + disciplin);
         Stævnetid nyStævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
-        medlem.tilføjStævnetid(nyStævnetid);
+        medlem.tilføjStævnetid(nyStævnetid);//Kalder tilføj metoden får at gøre svømmetid en del af medlem
         System.out.println("Registreret ny tid for " + disciplin + ": " + nyStævnetid);
     }
 

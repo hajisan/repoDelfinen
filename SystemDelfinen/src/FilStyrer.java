@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class FilStyrer {
 
-    private static final String filNavn = "src/AlleMedlemmer.csv"; // Navn på csv-filen
+    private static final String filNavn = "AlleMedlemmer.csv"; // Navn på csv-filen
 
     /*
      Læser alle medlemmer fra CSV-filen.

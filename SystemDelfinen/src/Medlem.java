@@ -7,10 +7,10 @@ public class Medlem {
     protected String navn;
     protected LocalDate fødselsDato;
     protected Medlemstyper medlemstypeEnum;
-    protected ArrayList<Svømmetid> træningstider = new ArrayList<>(); // Initialiseret
-    protected ArrayList<Stævnetid> stævnetider = new ArrayList<>(); // Initialiseret
+    protected ArrayList<Svømmetid> træningstider = new ArrayList<>(); // Initialiseret på forhånd
+    protected ArrayList<Stævnetid> stævnetider = new ArrayList<>(); // Initialiseret på forhånd
     protected boolean restance = false;
-    protected static ArrayList<Svømmedisciplin> svømmediscipliner = new ArrayList<>();
+    protected static ArrayList<Svømmedisciplin> svømmediscipliner = new ArrayList<>(); // Initialiseret på forhånd
 
 
 
@@ -22,7 +22,7 @@ public class Medlem {
         }
         this.navn = navn;
         this.fødselsDato = fødselsDato;
-
+        //afgør i vores oprettelse hvilken kategori medlemmet falder ind under, baseret på alder og input
         switch (medlemsKategori.toLowerCase().trim()) {
             case "aktiv":
                 if (LocalDate.now().minusYears(18).isBefore(this.fødselsDato))
@@ -43,14 +43,24 @@ public class Medlem {
         }
     }
 
+/*
+ Finder en eksisterende svømmedisciplin baseret på dens navn eller opretter en ny,
+ hvis den ikke findes i listen over svømmediscipliner
+*/
     public Svømmedisciplin findEllerOpretSvømmedisciplin(disciplinNavne disciplin) {
+        //Løber igennem listen af eksisterende svømmediscipliner
         for (Svømmedisciplin svømmedisciplin : svømmediscipliner) {
+            //tjekker om disciplinen navn matcher noget i forvejem
             if (svømmedisciplin.getDisciplinNavn().equals(disciplin.name())) {
+                //returnerer den aktuelle svømmedisciplin hvis navnet matcher
                 return svømmedisciplin;
             }
         }
+        //hvis disciplinen ikke findes
         Svømmedisciplin nyDisciplin = new Svømmedisciplin(disciplin);
+        //tilføj den nye disciplin
         svømmediscipliner.add(nyDisciplin);
+        //returnerer den nye disciplin
         return nyDisciplin;
     }
 
@@ -118,7 +128,7 @@ public class Medlem {
 
 
 
-    // toString-metode for at returnere en String af et Medlem-objekt
+    // toString-metode for at returnere en String af et Medlem-objekt i et let læseligt format
     public String toString() {
         return "Medlem{" +
                 "Navn: " + navn + "\n" +
