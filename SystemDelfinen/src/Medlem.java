@@ -7,8 +7,8 @@ public class Medlem {
     protected String navn;
     protected LocalDate fødselsDato;
     protected Medlemstyper medlemstypeEnum;
-    protected ArrayList<Svømmetid> træningstider;
-    protected ArrayList<Stævnetid> stævnetider;
+    protected ArrayList<Svømmetid> træningstider = new ArrayList<>(); // Initialiseret
+    protected ArrayList<Stævnetid> stævnetider = new ArrayList<>(); // Initialiseret
     protected boolean restance = false;
     protected static ArrayList<Svømmedisciplin> svømmediscipliner = new ArrayList<>();
 
@@ -24,22 +24,22 @@ public class Medlem {
         this.fødselsDato = fødselsDato;
 
         switch (medlemsKategori.toLowerCase().trim()) {
-            case null: //Kaster en IllegalArgumentException, hvis medlemskategori er null
-                throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
-            case "": //Kaster en IllegalArgumentException, hvis medlemskategori er en tom String
-                throw new IllegalArgumentException("Medlemskategori må ikke være tom.");
-            case "aktiv": //Sætter medlemmets medlemskab til det passende aktive medlemskab ud fra medlemmets fødselsdato
+            case "aktiv":
                 if (LocalDate.now().minusYears(18).isBefore(this.fødselsDato))
                     this.medlemstypeEnum = Medlemstyper.AKTIV_JUNIOR;
                 else if (LocalDate.now().minusYears(18).isAfter(this.fødselsDato) &&
                         LocalDate.now().minusYears(60).isBefore(this.fødselsDato))
                     this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR;
-                else this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR_60PLUS;
+                else
+                    this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR_60PLUS;
                 break;
-            case "passiv": //Sætter medlemmets medlemskab til et passivt medlemskab
+            case "passiv":
                 this.medlemstypeEnum = Medlemstyper.PASSIV;
-            default: //Kaster en Illegal ArgumentException, hvis man ikke vælger aktiv eller passiv
-                throw new IllegalArgumentException("Medlemskategori " + medlemsKategori + " kan ikke genkendes. Skriv venligst enten aktiv eller passiv.");
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "Medlemskategori " + medlemsKategori + " kan ikke genkendes. Skriv venligst enten aktiv eller passiv."
+                );
         }
     }
 

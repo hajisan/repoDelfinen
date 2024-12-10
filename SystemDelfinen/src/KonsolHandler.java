@@ -66,7 +66,7 @@ public class KonsolHandler {
     // Hovedmenu til at styre systemet
     public void startMenu() {
         Scanner scanner = new Scanner(System.in);
-        boolean kørSystem = true;
+        boolean kørSystem = true; //go go time
 
         while (kørSystem) {
             // Udskriv hovedmenuen
@@ -75,6 +75,7 @@ public class KonsolHandler {
             System.out.println("1. Opret nyt medlem");
             System.out.println("2. Registrer stævnetid");
             System.out.println("3. Registrer træningstid");
+            //System.out.println(".. Rediger medlem");
             System.out.println("4. Vis alle medlemmer");
             System.out.println("5. Beregn forventet kontingentindkomst");
             System.out.println("6. Vis top 5 svømmere");
@@ -85,7 +86,7 @@ public class KonsolHandler {
             scanner.nextLine(); // For at konsumere linjeskiftet
 
             switch (valg) {
-                case 1:
+                case 1: //I denne case scanner vi bare efter de informationer vi behøver og kalder opretMedlem metoden
                     // Opretter et nyt medlem
                     System.out.print("Indtast navn: ");
                     String navn = scanner.nextLine();
@@ -94,9 +95,10 @@ public class KonsolHandler {
                     System.out.print("Indtast medlemskategori (Aktiv/Passiv): ");
                     String medlemskategori = scanner.nextLine();
                     Medlem nytMedlem = opretMedlem(navn, fødselsdato, medlemskategori);
+                    new FilStyrer().tilføjMedlem(nytMedlem); //her tilføjer vi den så til en arrayListe som gemmes til CSV filen
                     System.out.println("Nyt medlem oprettet: " + nytMedlem);
                     break;
-                case 2:
+                case 2: // Vi scanner efter nødvendige oplysninger, og gemmer i midletidige variabler
                     // Registrerer stævnetid for et medlem
                     System.out.print("Indtast navn på medlem: ");
                     String medlemNavnStævne = scanner.nextLine();
@@ -110,19 +112,17 @@ public class KonsolHandler {
                     System.out.print("Indtast lokalitet: ");
                     String lokalitet = scanner.nextLine();
                     Medlem medlemStævne = findMedlem(medlemNavnStævne);
-                    if (medlemStævne != null) {
+                    if (medlemStævne != null) { //her tildeler vi dem så metoden fra tidligere der initialiserer et stævnetids-objekt
                         disciplinNavne disciplinEnumStævne = disciplinNavne.valueOf(disciplinStævne.toUpperCase());
                         Duration tidStævneDuration = Duration.ofSeconds(tidStævne);
                         LocalDate datoParsedStævne = stringToLocalDate(datoStævne);
-                        Svømmedisciplin stævneDisciplin = medlemStævne.findEllerOpretSvømmedisciplin(disciplinEnumStævne);
-                        Stævnetid stævnetid = new Stævnetid(disciplinEnumStævne, tidStævneDuration, datoParsedStævne, lokalitet);
-                        medlemStævne.tilføjStævnetid(stævnetid);
-                        System.out.println("Stævnetid registreret.");
+                        tilføjStævnetidTilMedlem(medlemStævne, tidStævneDuration, disciplinEnumStævne, datoParsedStævne, lokalitet);
+                        System.out.println("Stævnetid registreret og gemt.");
                     } else {
                         System.out.println("Medlem ikke fundet.");
                     }
                     break;
-                case 3:
+                case 3:// Vi scanner efter nødvendige oplysninger, og gemmer i midletidige variabler
                     // Registrerer træningstid for et medlem
                     System.out.print("Indtast navn på medlem: ");
                     String medlemNavnTræning = scanner.nextLine();
@@ -134,37 +134,38 @@ public class KonsolHandler {
                     System.out.print("Indtast dato (DD/MM/YYYY): ");
                     String datoTræning = scanner.nextLine();
                     Medlem medlemTræning = findMedlem(medlemNavnTræning);
-                    if (medlemTræning != null) {
+                    if (medlemTræning != null) {//her tildeler vi dem så metoden fra tidligere der initialiserer et Svømmetids-objekt
                         disciplinNavne disciplinEnumTræning = disciplinNavne.valueOf(disciplinTræning.toUpperCase());
                         Duration tidTræningDuration = Duration.ofSeconds(tidTræning);
                         LocalDate datoParsedTræning = stringToLocalDate(datoTræning);
-                        Svømmedisciplin træningDisciplin = medlemTræning.findEllerOpretSvømmedisciplin(disciplinEnumTræning);
-                        Svømmetid træningstid = new Svømmetid(disciplinEnumTræning, tidTræningDuration, datoParsedTræning);
-                        medlemTræning.tilføjTræningstid(træningstid);
-                        System.out.println("Træningstid registreret.");
+                        tilføjSvømmetidTilMedlem(medlemTræning, tidTræningDuration, disciplinEnumTræning, datoParsedTræning);
+                        System.out.println("Træningstid registreret og gemt.");
                     } else {
                         System.out.println("Medlem ikke fundet.");
                     }
                     break;
                 case 4:
                     // Viser alle medlemmer
-                    ArrayList<Medlem> medlemmer = FilStyrer.læsAlleMedlemmer();
+                    ArrayList<Medlem> medlemmer = FilStyrer.læsAlleMedlemmer(); //henter bare metoden fra filstyrer
                     if (medlemmer.isEmpty()) {
-                        System.out.println("Ingen medlemmer fundet.");
+                        System.out.println("Ingen medlemmer fundet."); //hvis ikke der er indhold, giv meddelse
                     } else {
                         for (Medlem medlem : medlemmer) {
-                            System.out.println(medlem);
+                            System.out.println(medlem); //ellers iterer igennem listen af medllemmer og print dem
                         }
                     }
                     break;
                 case 5:
                     // Beregner og viser forventet kontingentindkomst
-                    double forventetIndkomst = KontingentStyrer.beregnForventetIndkomst();
+                    double forventetIndkomst = KontingentStyrer.beregnForventetIndkomst(); //kalder metoden fra kontingentStyrer-klassen
                     System.out.println("Forventet kontingentindkomst: " + forventetIndkomst + " DKK");
                     break;
                 case 6:
                     // Viser top 5 svømmere i en given disciplin
-                    System.out.print("Indtast disciplin (e.g., BUTTERFLY): ");
+                    System.out.print("Indtast disciplin (BUTTERFLY," + //dine valgmuligheder
+                            "CRAWL, " +
+                            "RYGCRAWL, " +
+                            "BRYSTSVØMNING. ");
                     String disciplinInput = scanner.nextLine();
                     disciplinNavne disciplin = disciplinNavne.valueOf(disciplinInput.toUpperCase());
 
@@ -183,8 +184,8 @@ public class KonsolHandler {
                     break;
                 case 7:
                     // Genererer en økonomirapport
-                    ArrayList<Medlem> medlemmerForRapport = FilStyrer.læsAlleMedlemmer();
-                    ØkonomiRapport rapport = new ØkonomiRapport(medlemmerForRapport);
+                    ArrayList<Medlem> medlemmerForRapport = FilStyrer.læsAlleMedlemmer(); //henter alle medlemmer
+                    ØkonomiRapport rapport = new ØkonomiRapport(medlemmerForRapport); //initaliserer et nyt rapport objekt
                     double totalIndkomst = rapport.beregnTotalIndkomst();
                     System.out.println("Total indkomst: " + totalIndkomst + " DKK");
                     break;
@@ -201,6 +202,7 @@ public class KonsolHandler {
 
         scanner.close();
     }
+
 
     // Hjælpefunktion til at finde et medlem baseret på navn
     private Medlem findMedlem(String navn) {
