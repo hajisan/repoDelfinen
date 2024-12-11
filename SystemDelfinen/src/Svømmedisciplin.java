@@ -11,27 +11,45 @@ public class Svømmedisciplin {
     protected Svømmetid bedsteTid;
 
 
-    // Constructor
+    //Constructor
     public Svømmedisciplin(disciplinNavne disciplin) {
         this.disciplin = disciplin;
         this.træningsTider = new ArrayList<>();
         this.stævneTider = new ArrayList<>();
     }
 
-    //metode til at registrere træningstid
+    /*
+    // metode til at registrere træningstid
     public void registrerTræningsTid(Medlem medlem, Duration tid, LocalDate dato) {
         System.out.println("Registrerer tid for disciplinen: " + disciplin);
         Svømmetid nySvømmetid = new Svømmetid(disciplin, tid, dato);
-        medlem.tilføjTræningstid(nySvømmetid); //Kalder tilføj metoden får at gøre svømmetid en del af medlem
+        træningsTider.add(nySvømmetid); //Kalder tilføj metoden får at gøre svømmetid en del af medlem
         System.out.println("Registreret ny tid for " + disciplin + ": " + nySvømmetid);
     }
+    */
 
+    // Overloaded version af ovenstående metode
+    public void registrerTræningsTid(Svømmetid svømmetid) {
+        System.out.println("Registrerer tid for disciplinen: " + disciplin);
+        træningsTider.add(svømmetid); //Kalder tilføj metoden får at gøre svømmetid en del af medlem
+        System.out.println("Registreret ny tid for " + disciplin + ": " + svømmetid);
+    }
+
+    /*
     //metode til at registrere stævnetid
     public void registrerStævneTid(Medlem medlem, Duration tid, LocalDate dato, String lokalitet) {
         System.out.println("Registrerer tid for disciplinen: " + disciplin);
         Stævnetid nyStævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
-        medlem.tilføjStævnetid(nyStævnetid);
+        stævneTider.add(nyStævnetid);
         System.out.println("Registreret ny tid for " + disciplin + ": " + nyStævnetid);
+    }
+    */
+
+    //metode til at registrere stævnetid
+    public void registrerStævneTid(Stævnetid stævnetid) {
+        System.out.println("Registrerer tid for disciplinen: " + disciplin);
+        stævneTider.add(stævnetid);
+        System.out.println("Registreret ny tid for " + disciplin + ": " + stævnetid);
     }
 
     //metode til at få top 5
@@ -40,7 +58,7 @@ public class Svømmedisciplin {
 
         // Gå igennem alle medlemmer og hent tider for den givne disciplin
         for (Medlem medlem : medlemmer) {
-            for (Svømmetid tid : medlem.getSvømmetider()) {
+            for (Svømmetid tid : træningsTider) {
                 if (tid.getDisciplin().equals(disciplin)) {
                     alleTider.add(tid);
                 }
@@ -61,24 +79,51 @@ public class Svømmedisciplin {
         System.out.println("Registrerer flere tider for disciplin: " + disciplin + " for medlem: " + medlem.getNavn());
         while (tilføjFlere) {
             try {
-                // Indtast tid
-                System.out.println("Indtast tid i minutter:");
-                long minutter = sc.nextLong();
+                System.out.println("Tast 1 for træningstid. Tast 2 for stævnetid.");
+                int valg = sc.nextInt();
+                if (valg == 1) {
+                    // Indtast tid
+                    System.out.println("Indtast tid i minutter:");
+                    long minutter = sc.nextLong();
 
-                System.out.println("Indtast tid i sekunder:");
-                long sekunder = sc.nextLong();
-                sc.nextLine(); // Rens scanner buffer
+                    System.out.println("Indtast tid i sekunder:");
+                    long sekunder = sc.nextLong();
+                    sc.nextLine(); // Rens scanner buffer
 
-                // Indtast dato
-                System.out.println("Indtast dato (dd/mm/yyyy):");
-                String datoInput = sc.nextLine();
-                LocalDate dato = KonsolHandler.stringToLocalDate(datoInput);
+                    // Indtast dato
+                    System.out.println("Indtast dato (dd/mm/yyyy):");
+                    String datoInput = sc.nextLine();
+                    LocalDate dato = KonsolHandler.stringToLocalDate(datoInput);
 
-                // Opret og tilføj svømmetid
-                Svømmetid nySvømmetid = new Svømmetid(disciplin, Duration.ofMinutes(minutter).plusSeconds(sekunder), dato);
-                medlem.getSvømmetider().add(nySvømmetid);
+                    // Opret og tilføj svømmetid
+                    Svømmetid nySvømmetid = new Svømmetid(disciplin, Duration.ofMinutes(minutter).plusSeconds(sekunder), dato);
+                    træningsTider.add(nySvømmetid);
 
-                System.out.println("Svømmetid tilføjet: " + formatDuration(nySvømmetid.getTid()) + " på dato: " + dato);
+                    System.out.println("Svømmetid tilføjet: " + formatDuration(nySvømmetid.getTid()) + " på dato: " + dato);
+                } else if (valg == 2) {
+                    // Indtast tid
+                    System.out.println("Indtast tid i minutter:");
+                    long minutter = sc.nextLong();
+
+                    System.out.println("Indtast tid i sekunder:");
+                    long sekunder = sc.nextLong();
+                    sc.nextLine(); // Rens scanner buffer
+
+                    // Indtast dato
+                    System.out.println("Indtast dato (dd/mm/yyyy):");
+                    String datoInput = sc.nextLine();
+                    LocalDate dato = KonsolHandler.stringToLocalDate(datoInput);
+
+                    // Indtast lokation
+                    System.out.println("Indtast lokation: ");
+                    String lokation = sc.nextLine();
+
+                    // Opret og tilføj svømmetid
+                    Stævnetid nyStævnetid = new Stævnetid(disciplin, Duration.ofMinutes(minutter).plusSeconds(sekunder), dato, lokation);
+                    stævneTider.add(nyStævnetid);
+
+                    System.out.println("Svømmetid tilføjet: " + formatDuration(nyStævnetid.getTid()) + " på dato: " + dato);
+                }
 
                 /* Opdater bedste tid
                 opdaterBedsteTid(medlem);
@@ -137,12 +182,27 @@ public class Svømmedisciplin {
         return new ArrayList<>(stævneTider.subList(0, Math.min(5, stævneTider.size())));
     }
 
-
     public ArrayList<Stævnetid> getStævneTider() {
         return stævneTider;
     }
 
     public ArrayList<Svømmetid> getTræningsTider() {
         return træningsTider;
+    }
+
+    public String træningstiderTilString() {
+        String tider = "";
+        for (Svømmetid tid : træningsTider) {
+            tider += tid.toString() + ";";
+        }
+        return tider;
+    }
+
+    public String stævnetiderTilString() {
+        String tider = "";
+        for (Svømmetid tid : stævneTider) {
+            tider += tid.toString() + ";";
+        }
+        return tider;
     }
 }

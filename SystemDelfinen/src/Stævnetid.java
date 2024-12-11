@@ -16,4 +16,10 @@ public class Stævnetid extends Svømmetid{
     public String setLokalitet() {
         return lokalitet;
     }
+
+    @Override
+    public String toString() {
+        String string = "";
+        return disciplin.toString() + ":" + KonsolHandler.durationToString(tid) + ":" + KonsolHandler.LocalDateToString(dato) + lokalitet;
+    }
 }

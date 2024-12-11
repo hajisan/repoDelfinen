@@ -2,12 +2,14 @@ import java.io.*;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Scanner;
 
 public class FilStyrer {
 
-    private static final String filNavn = "src/AlleMedlemmer.csv"; // Navn på csv-filen
+    private static final String filNavn = "SystemDelfinen/resources/AlleMedlemmer.csv"; // Navn på csv-filen
+
+    public FilStyrer() {
+    }
 
     /*
      Læser alle medlemmer fra CSV-filen.
@@ -31,14 +33,60 @@ public class FilStyrer {
 
             //her går vi ind og aflæser hver linje. Da det er CSV (comma seperated version), er hver data imellem kommaer
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = new String[line.split(",").length];
+                for (int i = 0; i < parts.length; i++) {
+                    parts[i] = line.split(",")[i];
+                }
                 if (parts[0].equalsIgnoreCase("Medlem")) {
                     // Læs medlem
                     String navn = parts[1].trim(); //på plads 1 har vi navn
                     LocalDate fødselsdato = KonsolHandler.stringToLocalDate(parts[2].trim()); //fødselsdagsdato der laves om til string
                     String medlemskategori = parts[3].trim(); //er du aktiv eller passivt medlem? junior eller senior?
-                    medlemmer.add(new Medlem(navn, fødselsdato, medlemskategori)); //tilføjer medlemmet til arraylsiten medlemmer
-                } else if (parts[0].equalsIgnoreCase("Træningstid")) {
+                    Medlem medlem = new Medlem(navn, fødselsdato, medlemskategori);
+                    medlemmer.add(medlem); //tilføjer medlemmet til arraylisten medlemmer
+                    if (parts.length >= 5 && parts[4].equalsIgnoreCase("Træningstider")) {
+                        String[] træningstiderIParts = parts[5].split(";");
+                        for (String partToSplitAgain : træningstiderIParts) {
+                            switch (partToSplitAgain.split(":")[0].toLowerCase().trim()) {
+                                case "butterfly":
+                                    medlem.tilføjTræningstid(new Svømmetid(disciplinNavne.BUTTERFLY, KonsolHandler.stringToDuration(træningstiderIParts[1]), KonsolHandler.stringToLocalDate(træningstiderIParts[2])));
+                                    break;
+                                case "crawl":
+                                    medlem.tilføjTræningstid(new Svømmetid(disciplinNavne.CRAWL, KonsolHandler.stringToDuration(træningstiderIParts[1]), KonsolHandler.stringToLocalDate(træningstiderIParts[2])));
+                                    break;
+                                case "rygcrawl":
+                                    medlem.tilføjTræningstid(new Svømmetid(disciplinNavne.RYGCRAWL, KonsolHandler.stringToDuration(træningstiderIParts[1]), KonsolHandler.stringToLocalDate(træningstiderIParts[2])));
+                                    break;
+                                case "brystsvømning":
+                                    medlem.tilføjTræningstid(new Svømmetid(disciplinNavne.BRYSTSVØMNING, KonsolHandler.stringToDuration(træningstiderIParts[1]), KonsolHandler.stringToLocalDate(træningstiderIParts[2])));
+                                    break;
+                            }
+                        }
+                    }
+                    if (parts.length >= 7 && parts[6].equalsIgnoreCase("Stævnetider")) {
+                        String[] stævnetiderIParts = parts[7].split(";");
+                        for (String partToSplitAgain : stævnetiderIParts) {
+                            switch (partToSplitAgain.split(":")[0].toLowerCase().trim()) {
+                                case "butterfly":
+                                    medlem.tilføjTræningstid(new Stævnetid(disciplinNavne.BUTTERFLY, KonsolHandler.stringToDuration(stævnetiderIParts[1]), KonsolHandler.stringToLocalDate(stævnetiderIParts[2]), stævnetiderIParts[3]));
+                                    break;
+                                case "crawl":
+                                    medlem.tilføjTræningstid(new Stævnetid(disciplinNavne.CRAWL, KonsolHandler.stringToDuration(stævnetiderIParts[1]), KonsolHandler.stringToLocalDate(stævnetiderIParts[2]), stævnetiderIParts[3]));
+                                    break;
+                                case "rygcrawl":
+                                    medlem.tilføjTræningstid(new Stævnetid(disciplinNavne.RYGCRAWL, KonsolHandler.stringToDuration(stævnetiderIParts[1]), KonsolHandler.stringToLocalDate(stævnetiderIParts[2]), stævnetiderIParts[3]));
+                                    break;
+                                case "brystsvømning":
+                                    medlem.tilføjTræningstid(new Stævnetid(disciplinNavne.BRYSTSVØMNING, KonsolHandler.stringToDuration(stævnetiderIParts[1]), KonsolHandler.stringToLocalDate(stævnetiderIParts[2]), stævnetiderIParts[3]));
+                                    break;
+                            }
+                        }
+                    }
+                    if (parts.length >= 10 && parts[8].equalsIgnoreCase("restance")) {
+                        medlem.setRestance(Boolean.parseBoolean(parts[9]));
+                    }
+                }
+                    /*
                     // Læs træningstid
                     String navn = parts[1].trim(); //Vi tager navnet på medlemmet
                     disciplinNavne disciplin = disciplinNavne.valueOf(parts[2].trim()); //Hvilken disciplin har de deltaget i
@@ -51,7 +99,7 @@ public class FilStyrer {
                         Svømmetid svømmetid = new Svømmetid(disciplin, tid, dato);
                         medlem.tilføjTræningstid(svømmetid);
                     }
-                } else if (parts[0].equalsIgnoreCase("Stævnetid")) {
+                 else if (parts[0].equalsIgnoreCase("Stævnetid")) {
                     // Læs stævnetid
                     String navn = parts[1].trim();
                     disciplinNavne disciplin = disciplinNavne.valueOf(parts[2].trim());
@@ -65,12 +113,14 @@ public class FilStyrer {
                         medlem.tilføjStævnetid(stævnetid);
                     }
                 }
+
+                   */
             }
+
+
         } catch (IOException e) {
             System.out.println("Fejl ved læsning af fil: " + e.getMessage());
         }
-
-
         return medlemmer;
     }
 
@@ -82,39 +132,72 @@ public class FilStyrer {
     public void gemAlleMedlemmer(ArrayList<Medlem> medlemmer) {
         File file = new File(filNavn);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            for (Medlem medlem : medlemmer) { //For each loop der iterer gennem vores array af medlemmer
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            for (Medlem medlem : medlemmer) { //For each loop der itererer gennem vores array af medlemmer
                 // Gem medlem
-                writer.write("Medlem," + medlem.getNavn() + "," +
-                        KonsolHandler.LocalDateToString(medlem.getFødselsdato()) + "," +
-                        medlem.getMedlemstypeEnum());// her skrives informationen ind i CSV filen i det
+                writer.write("Medlem," + medlem.getNavn() + "," + KonsolHandler.LocalDateToString(medlem.getFødselsdato()) + "," + medlem.getMedlemstypeEnum() + "," + "Træningstider" + "," + medlem.getSvømmetiderSomString() + "," + "Stævnetider" + "," + medlem.getStævnetiderSomString() + "," + "Restance" + "," + medlem.getRestance());// her skrives informationen ind i CSV filen i det
                 writer.newLine(); // her går vi videre til næste linje
 
                 // Gem træningstider
-                for (Svømmetid træningstid : medlem.getSvømmetider()) { //For each loop, for svømmetider,
-                    writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                            træningstid.getDisciplin() + "," +
-                            træningstid.getTid().toSeconds() + "," +
-                            KonsolHandler.LocalDateToString(træningstid.getDato()));
-                    writer.newLine(); // Ny linje i CSV-filen
-                }
+                gemTræningstider(medlem, writer);
 
                 // Gem stævnetider
-                for (Stævnetid stævnetid : medlem.getStævnetider()) { //For each loop, for stævnetider
-                    writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer stævne tid
-                            stævnetid.getDisciplin() + "," +
-                            stævnetid.getTid().toSeconds() + "," +
-                            KonsolHandler.LocalDateToString(stævnetid.getDato()) + "," +
-                            stævnetid.getLokalitet());
-                    writer.newLine(); //Ny linje
-                }
+                gemStævnetider(medlem, writer);
             }
-
+            writer.close();
             System.out.println("Data gemt til CSV-filen: " + filNavn);
         } catch (IOException e) {
             System.out.println("Fejl ved skrivning til fil: " + e.getMessage());
         }
     }
+
+    public void gemTræningstider(Medlem medlem, BufferedWriter writer) throws IOException {
+        // Gem træningstider
+        for (Svømmetid træningstid : medlem.getSvømmetider("Butterfly")) { //For each loop, for svømmetider,
+            writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                    træningstid.getDisciplin() + "," + træningstid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(træningstid.getDato()));
+            writer.newLine(); // Ny linje i CSV-filen
+        }
+        for (Svømmetid træningstid : medlem.getSvømmetider("Crawl")) { //For each loop, for svømmetider,
+            writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                    træningstid.getDisciplin() + "," + træningstid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(træningstid.getDato()));
+            writer.newLine(); // Ny linje i CSV-filen
+        }
+        for (Svømmetid træningstid : medlem.getSvømmetider("Rygcrawl")) { //For each loop, for svømmetider,
+            writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                    træningstid.getDisciplin() + "," + træningstid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(træningstid.getDato()));
+            writer.newLine(); // Ny linje i CSV-filen
+        }
+        for (Svømmetid træningstid : medlem.getSvømmetider("Brystsvømning")) { //For each loop, for svømmetider,
+            writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                    træningstid.getDisciplin() + "," + træningstid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(træningstid.getDato()));
+            writer.newLine(); // Ny linje i CSV-filen
+        }
+    }
+
+    public void gemStævnetider(Medlem medlem, BufferedWriter writer) throws IOException {
+        for (Svømmetid stævnetid : medlem.getStævnetider("Butterfly")) { //For each loop, for svømmetider,
+            writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                    stævnetid.getDisciplin() + "," + stævnetid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(stævnetid.getDato()));
+            writer.newLine(); // Ny linje i CSV-filen
+        }
+        for (Svømmetid stævnetid : medlem.getStævnetider("Crawl")) { //For each loop, for svømmetider,
+            writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                    stævnetid.getDisciplin() + "," + stævnetid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(stævnetid.getDato()));
+            writer.newLine(); // Ny linje i CSV-filen
+        }
+        for (Svømmetid stævnetid : medlem.getStævnetider("Rygcrawl")) { //For each loop, for svømmetider,
+            writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                    stævnetid.getDisciplin() + "," + stævnetid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(stævnetid.getDato()));
+            writer.newLine(); // Ny linje i CSV-filen
+        }
+        for (Svømmetid stævnetid : medlem.getStævnetider("Brystsvømning")) { //For each loop, for svømmetider,
+            writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
+                    stævnetid.getDisciplin() + "," + stævnetid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(stævnetid.getDato()));
+            writer.newLine(); // Ny linje i CSV-filen
+        }
+    }
+
 
     /*
     Tilføjer et nyt medlem til CSV-filen.
@@ -197,6 +280,7 @@ public class FilStyrer {
         if (medlemFundet) { //hvis medlemmet eksisterer gemmer vi så ændringene
             gemAlleMedlemmer(medlemmer); // Gem ændringer
             System.out.println("Ændringer gemt.");
+            sc.close();
         } else {
             System.out.println("Ingen medlemmer fundet med det angivne navn.");
         }
@@ -238,7 +322,7 @@ public class FilStyrer {
 
     // Gemmer de 5 bedste trænings- og stævnetider til en CSV-fil
     public void gemSvømmetider(ArrayList<Medlem> medlemmer, String filNavn) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filNavn))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filNavn, true))) {
             // Gennemløb alle medlemmer
             for (Medlem medlem : medlemmer) {
                 // Gennemgå hver disciplin for medlemmet
@@ -246,21 +330,14 @@ public class FilStyrer {
                     // Gem de 5 bedste træningstider
                     ArrayList<Svømmetid> bedsteTræningstider = disciplin.getTop5Træningstider();
                     for (Svømmetid tid : bedsteTræningstider) {
-                        writer.write(medlem.getNavn() + "," +
-                                disciplin.getDisciplinNavn() + "," +
-                                tid.getTid() + "," +
-                                tid.getDato());
+                        writer.write(medlem.getNavn() + "," + disciplin.getDisciplinNavn() + "," + tid.getTid() + "," + tid.getDato());
                         writer.newLine();
                     }
 
                     // Gem de 5 bedste stævnetider
                     ArrayList<Stævnetid> bedsteStævnetider = disciplin.getTop5Stævnetider();
                     for (Stævnetid tid : bedsteStævnetider) {
-                        writer.write(medlem.getNavn() + "," +
-                                disciplin.getDisciplinNavn() + "," +
-                                tid.getTid() + "," +
-                                tid.getDato() + "," +
-                                tid.getLokalitet());
+                        writer.write(medlem.getNavn() + "," + disciplin.getDisciplinNavn() + "," + tid.getTid() + "," + tid.getDato() + "," + tid.getLokalitet());
                         writer.newLine();
                     }
                 }
@@ -296,5 +373,8 @@ public class FilStyrer {
         }
     }
 
+    public String getFilNavn() {
+        return filNavn;
+    }
 }
 

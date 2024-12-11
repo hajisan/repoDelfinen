@@ -1,19 +1,25 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class KonsolHandler {
+    FilStyrer filStyrer;
+    KontingentStyrer kontingentStyrer;
 
     //Constructor -- Tom indtil videre
     public KonsolHandler() {
-
+        filStyrer = new FilStyrer();
+        kontingentStyrer = new KontingentStyrer(filStyrer);
     }
 
     //Opretter et nyt medlem med Factory-metoden fra Medlem-klassen
-    public Medlem opretMedlem(String navn, String fødselsdato, String medlemskategori) {
-        return new Medlem(navn, stringToLocalDate(fødselsdato), medlemskategori);
-    }
+    //public Medlem opretMedlem(String navn, String fødselsdato, String medlemskategori) {
+    //    return new Medlem(navn, stringToLocalDate(fødselsdato), medlemskategori);
+    //}
 
     //Tilføjer en tid til det valgte medlem ud fra tid i sekunder og millisekunder
     public void tilføjTidTilMedlem(Medlem medlem, long sekunder, long millisekunder) {
@@ -34,12 +40,34 @@ public class KonsolHandler {
 
     //Returnerer en ArrayList af et givent medlems Svømmetider
     public ArrayList<Svømmetid> visEtMedlemsSvømmetider(Medlem medlem) {
-        return medlem.getSvømmetider();
+        ArrayList<Svømmetid> alleSvømmetider = new ArrayList<>();
+        alleSvømmetider.addAll(medlem.getSvømmetider("Butterfly"));
+        alleSvømmetider.addAll(medlem.getSvømmetider("Crawl"));
+        alleSvømmetider.addAll(medlem.getSvømmetider("Rygcrawl"));
+        alleSvømmetider.addAll(medlem.getSvømmetider("Brystsvømning"));
+        return alleSvømmetider;
     }
 
     //Returnerer en ArrayList af et givent medlems Stævnetider
     public ArrayList<Stævnetid> visStævnetider(Medlem medlem) {
-        return medlem.getStævnetider();
+        ArrayList<Stævnetid> alleStævnetider = new ArrayList<>();
+        alleStævnetider.addAll(medlem.getStævnetider("Butterfly"));
+        alleStævnetider.addAll(medlem.getStævnetider("Crawl"));
+        alleStævnetider.addAll(medlem.getStævnetider("Rygcrawl"));
+        alleStævnetider.addAll(medlem.getStævnetider("Brystsvømning"));
+        return alleStævnetider;
+    }
+
+    // Metode der tager en String af formen "s,ms", hvor s er sekunder og ms er millisekunder
+    public static Duration stringToDuration(String tid) {
+        return Duration.ofSeconds(Long.parseLong(tid.split(",")[0]), Long.parseLong(tid.split(",")[1]) * 1000);
+    }
+
+    // Hjælpefunktion til at formatere Duration som en læsbar streng
+    public static String durationToString(Duration duration) {
+        long minutter = duration.toMinutes();
+        long sekunder = duration.minusMinutes(minutter).getSeconds();
+        return String.format("%02d:%02d", minutter, sekunder);
     }
 
     public static LocalDate stringToLocalDate(String dato) {
@@ -94,8 +122,8 @@ public class KonsolHandler {
                     String fødselsdato = scanner.nextLine();
                     System.out.print("Indtast medlemskategori (Aktiv/Passiv): ");
                     String medlemskategori = scanner.nextLine();
-                    Medlem nytMedlem = opretMedlem(navn, fødselsdato, medlemskategori);
-                    new FilStyrer().tilføjMedlem(nytMedlem); //her tilføjer vi den så til en arrayListe som gemmes til CSV filen
+                    Medlem nytMedlem = new Medlem(navn, fødselsdato, medlemskategori);
+                    filStyrer.tilføjMedlem(nytMedlem); //her tilføjer vi den så til en arrayListe som gemmes til CSV filen
                     System.out.println("Nyt medlem oprettet: " + nytMedlem);
                     break;
                 case 2: // Vi scanner efter nødvendige oplysninger, og gemmer i midletidige variabler
@@ -117,6 +145,11 @@ public class KonsolHandler {
                         Duration tidStævneDuration = Duration.ofSeconds(tidStævne);
                         LocalDate datoParsedStævne = stringToLocalDate(datoStævne);
                         tilføjStævnetidTilMedlem(medlemStævne, tidStævneDuration, disciplinEnumStævne, datoParsedStævne, lokalitet);
+                        try {
+                            filStyrer.gemStævnetider(medlemStævne, new BufferedWriter(new FileWriter(filStyrer.getFilNavn(), true)));
+                        } catch (IOException e) {
+                            System.out.println("Fejl ved læsning af fil: " + e.getMessage());
+                        }
                         System.out.println("Stævnetid registreret og gemt.");
                     } else {
                         System.out.println("Medlem ikke fundet.");
@@ -139,6 +172,11 @@ public class KonsolHandler {
                         Duration tidTræningDuration = Duration.ofSeconds(tidTræning);
                         LocalDate datoParsedTræning = stringToLocalDate(datoTræning);
                         tilføjSvømmetidTilMedlem(medlemTræning, tidTræningDuration, disciplinEnumTræning, datoParsedTræning);
+                        try {
+                            filStyrer.gemStævnetider(medlemTræning, new BufferedWriter(new FileWriter(filStyrer.getFilNavn(), true)));
+                        } catch (IOException e) {
+                            System.out.println("Fejl ved læsning af fil: " + e.getMessage());
+                        }
                         System.out.println("Træningstid registreret og gemt.");
                     } else {
                         System.out.println("Medlem ikke fundet.");
@@ -146,7 +184,7 @@ public class KonsolHandler {
                     break;
                 case 4:
                     // Viser alle medlemmer
-                    ArrayList<Medlem> medlemmer = FilStyrer.læsAlleMedlemmer(); //henter bare metoden fra filstyrer
+                    ArrayList<Medlem> medlemmer = filStyrer.læsAlleMedlemmer(); //henter bare metoden fra filstyrer
                     if (medlemmer.isEmpty()) {
                         System.out.println("Ingen medlemmer fundet."); //hvis ikke der er indhold, giv meddelse
                     } else {
@@ -157,7 +195,7 @@ public class KonsolHandler {
                     break;
                 case 5:
                     // Beregner og viser forventet kontingentindkomst
-                    double forventetIndkomst = KontingentStyrer.beregnForventetIndkomst(); //kalder metoden fra kontingentStyrer-klassen
+                    double forventetIndkomst = kontingentStyrer.beregnForventetIndkomst(); //kalder metoden fra kontingentStyrer-klassen
                     System.out.println("Forventet kontingentindkomst: " + forventetIndkomst + " DKK");
                     break;
                 case 6:
@@ -170,7 +208,7 @@ public class KonsolHandler {
                     disciplinNavne disciplin = disciplinNavne.valueOf(disciplinInput.toUpperCase());
 
                     // Find disciplinen og hent top 5 tider
-                    medlemmer = FilStyrer.læsAlleMedlemmer();
+                    medlemmer = filStyrer.læsAlleMedlemmer();
                     for (Medlem medlem : medlemmer) {
                         Svømmedisciplin svømmedisciplin = medlem.findEllerOpretSvømmedisciplin(disciplin);
                         ArrayList<Svømmetid> top5 = svømmedisciplin.getTop5Træningstider();
@@ -184,7 +222,7 @@ public class KonsolHandler {
                     break;
                 case 7:
                     // Genererer en økonomirapport
-                    ArrayList<Medlem> medlemmerForRapport = FilStyrer.læsAlleMedlemmer(); //henter alle medlemmer
+                    ArrayList<Medlem> medlemmerForRapport = filStyrer.læsAlleMedlemmer(); //henter alle medlemmer
                     ØkonomiRapport rapport = new ØkonomiRapport(medlemmerForRapport); //initaliserer et nyt rapport objekt
                     double totalIndkomst = rapport.beregnTotalIndkomst();
                     System.out.println("Total indkomst: " + totalIndkomst + " DKK");
@@ -207,7 +245,7 @@ public class KonsolHandler {
     // Hjælpefunktion til at finde et medlem baseret på navn
     private Medlem findMedlem(String navn) {
         // Søger efter et medlem i listen over medlemmer
-        ArrayList<Medlem> medlemmer = FilStyrer.læsAlleMedlemmer();
+        ArrayList<Medlem> medlemmer = filStyrer.læsAlleMedlemmer();
         for (Medlem medlem : medlemmer) {
             if (medlem.getNavn().equalsIgnoreCase(navn)) {
                 return medlem;

@@ -2,9 +2,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 public class Svømmetid {
-    private Duration tid; // Tid som en Duration
-    private disciplinNavne disciplin; // Disciplin (fx Rygcrawl, Butterfly)
-    private LocalDate dato; // Dato for svømmetiden
+    protected Duration tid; // Tid som en Duration
+    protected disciplinNavne disciplin; // Disciplin (fx Rygcrawl, Butterfly)
+    protected LocalDate dato; // Dato for svømmetiden
 
     // Constructor
     public Svømmetid(disciplinNavne disciplin, Duration tid, LocalDate dato) {
@@ -38,19 +38,14 @@ public class Svømmetid {
         // Opret en ny Svømmetid
         Svømmetid nySvømmetid = new Svømmetid(disciplin, nyTid, dato);
 
-        // Tilføj svømmetiden til medlemmets træningsresultater
-        medlem.getSvømmetider().add(nySvømmetid);
-
         // Feedback til konsollen
-        System.out.println("Svømmetid tilføjet: " + formatDuration(nyTid) + " i " +
+        System.out.println("Svømmetid tilføjet: " + KonsolHandler.durationToString(nyTid) + " i " +
                 disciplin + " for medlem: " + medlem.getNavn());
     }
 
-    // Hjælpefunktion til at formatere Duration som en læsbar streng
-    private static String formatDuration(Duration duration) {
-        long minutter = duration.toMinutes();
-        long sekunder = duration.minusMinutes(minutter).getSeconds();
-        return String.format("%02d:%02d", minutter, sekunder);
+    @Override
+    public String toString() {
+        String string = "";
+        return disciplin.toString() + ":" + KonsolHandler.durationToString(tid) + ":" + KonsolHandler.LocalDateToString(dato);
     }
-
 }
