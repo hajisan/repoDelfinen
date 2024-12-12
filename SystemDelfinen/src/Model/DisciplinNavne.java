@@ -1,3 +1,5 @@
+package Model;
+
 public enum DisciplinNavne {
     //Enumkonstanter der repræsenterer de fire svømmearter
     BUTTERFLY,
@@ -7,7 +9,7 @@ public enum DisciplinNavne {
 
     @Override
     public String toString() {
-        return switch (this) {
+        return switch (this) { // Returnerer en tekstrepræsentation af enum-værdien baseret på dens navn
             case BUTTERFLY -> "Butterfly";
             case CRAWL -> "Crawl";
             case RYGCRAWL -> "Rygcrawl";

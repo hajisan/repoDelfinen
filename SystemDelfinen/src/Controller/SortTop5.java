@@ -1,14 +1,14 @@
+package Controller;
+
+import Model.Svømmetid;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class SortTop5 {
 
-    // Tom konstruktør
-    public SortTop5() {
-    }
-
-    // Denne metode forventer en liste af Svømmetid-objekter og returnerer de top 5 hurtigste
+    // Denne metode forventer en liste af Model.Svømmetid-objekter og returnerer de top 5 hurtigste
     public static ArrayList<Svømmetid> top5Svømmere(ArrayList<Svømmetid> alleTider) {
         if (alleTider == null || alleTider.isEmpty()) { //Hurtig kontrol om er overhovedet er nogle i listen
             throw new IllegalArgumentException("Tidslisten er tom eller null.");

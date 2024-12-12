@@ -1,9 +1,13 @@
+package Controller;
+
+import Model.Medlem;
+
 import java.util.List;
 
 public class ØkonomiRapport extends Rapport {
     private List<Medlem> medlemmer;
 
-    // Konstruktør
+    // Constructor
     public ØkonomiRapport(List<Medlem> medlemmer) {
         this.medlemmer = medlemmer;
     }
@@ -17,10 +21,10 @@ public class ØkonomiRapport extends Rapport {
         return totalIndkomst;
     }
 
-    // Bruger Rapport-klassen, til at genere en Økonomi Rapport
+    // Bruger Controller.Rapport-klassen, til at genere en Økonomi Controller.Rapport
     @Override
     public void generer() {
-        System.out.println("Økonomi Rapport:");
+        System.out.println("Økonomi Controller.Rapport:");
         System.out.println("================");
         for (Medlem medlem : medlemmer) {
             System.out.println("Navn: " + medlem.getNavn() + ", Kontigent: " + medlem.getKontingent());
@@ -28,5 +32,4 @@ public class ØkonomiRapport extends Rapport {
         System.out.println("================");
         System.out.println("Total indkomst: " + beregnTotalIndkomst());
     }
-
 }

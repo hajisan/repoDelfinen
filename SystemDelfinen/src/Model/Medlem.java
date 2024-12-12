@@ -1,16 +1,18 @@
+package Model;
+
+import Controller.KonsolHandler;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-// Abstrakt klasse som representerer et medlem
 public class Medlem {
     // Private instansvariabler for medlemsegenskaper
-    protected String navn;
-    protected LocalDate fødselsDato;
-    protected Medlemstyper medlemstypeEnum;
-    protected boolean restance = false;
-    protected ArrayList<Svømmedisciplin> svømmediscipliner;
+    private String navn; // Medlemmets navn
+    private LocalDate fødselsDato; // Medlemmets fødselsdato
+    private Medlemstyper medlemstypeEnum; // Medlemmets type (f.eks. Aktiv, Passiv)
+    private boolean restance = false; // Angiver om medlemmet er i restance
+    private ArrayList<Svømmedisciplin> svømmediscipliner; // Liste over svømmediscipliner, som indeholder tider for hver disciplin
 
-    // Konstruktør for at initialisere et Medlem-objekt
+    // Constructor initialiserer et Model.Medlem-objekt
     public Medlem(String navn, LocalDate fødselsdato, String medlemsKategori) {
         // Tjekker om navnet er null eller tomt og kaster en IllegalArgumentException hvis det er tilfældet
         if (navn == null || navn.isEmpty()) {
@@ -18,11 +20,11 @@ public class Medlem {
         }
         this.navn = navn;
         this.fødselsDato = fødselsdato;
-        svømmediscipliner= new ArrayList<>();
-        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.BUTTERFLY));
-        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.CRAWL));
-        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.RYGCRAWL));
-        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.BRYSTSVØMNING));
+        svømmediscipliner = new ArrayList<>();
+        svømmediscipliner.add(findSvømmedisciplin(DisciplinNavne.BUTTERFLY));
+        svømmediscipliner.add(findSvømmedisciplin(DisciplinNavne.CRAWL));
+        svømmediscipliner.add(findSvømmedisciplin(DisciplinNavne.RYGCRAWL));
+        svømmediscipliner.add(findSvømmedisciplin(DisciplinNavne.BRYSTSVØMNING));
 
         switch (medlemsKategori.toLowerCase().trim()) {
             case "aktiv":
@@ -45,21 +47,30 @@ public class Medlem {
         }
     }
 
+    // Alternativ constructor der tager en String som fødselsdato i stedet for et LocalDate-objekt
     public Medlem(String navn, String fødselsdato, String medlemsKategori) {
         this(navn, KonsolHandler.stringToLocalDate(fødselsdato), medlemsKategori);
 
     }
 
-    public Svømmedisciplin findEllerOpretSvømmedisciplin(DisciplinNavne disciplin) {
+    // Metode der finder en svømmedisciplin i listen over de fire discipliner
+    public Svømmedisciplin findSvømmedisciplin(DisciplinNavne disciplin) {
         for (Svømmedisciplin svømmedisciplin : svømmediscipliner) {
             if (svømmedisciplin.getDisciplinNavn().equals(disciplin.name())) {
                 return svømmedisciplin;
             }
         }
-        Svømmedisciplin nyDisciplin = new Svømmedisciplin(disciplin);
-        svømmediscipliner.add(nyDisciplin);
-        return nyDisciplin;
+        return switch (disciplin.toString()) {
+        case "Butterfly" -> new Svømmedisciplin(DisciplinNavne.BUTTERFLY);
+        case "Crawl" -> new Svømmedisciplin(DisciplinNavne.CRAWL);
+        case "Rygcrawl" -> new Svømmedisciplin(DisciplinNavne.RYGCRAWL);
+        case "Brystsvømning" -> new Svømmedisciplin(DisciplinNavne.BRYSTSVØMNING);
+            default -> new Svømmedisciplin(DisciplinNavne.BUTTERFLY);
+        };
+
+
     }
+
 
     public void tilføjTræningstid(Svømmetid træningstid) {
         String disciplin = træningstid.getDisciplin().toString();
@@ -124,48 +135,11 @@ public class Medlem {
         return medlemstypeEnum;
     }
 
-    public ArrayList<Svømmetid> getSvømmetider(String disciplin) {
-        for (Svømmedisciplin sd : svømmediscipliner) {
-            if (sd.getDisciplinNavn().equalsIgnoreCase(disciplin)) {
-                if (sd.getTræningsTider() == null) return new ArrayList<Svømmetid>();
-                else return sd.getTræningsTider();
-            }
-        }
-        return null;
-    }
-
-    public ArrayList<Stævnetid> getStævnetider(String disciplin) {
-        for (Svømmedisciplin sd : svømmediscipliner) {
-            if (sd.getDisciplinNavn().equalsIgnoreCase(disciplin)) {
-                if (sd.getStævneTider() == null) return new ArrayList<Stævnetid>();
-                return sd.getStævneTider();
-            }
-        }
-        return null;
-    }
-
-    public String getSvømmetiderSomString() {
-        String tider = null;
-        for (Svømmedisciplin disciplin : svømmediscipliner) {
-            tider += Svømmedisciplin.træningstiderTilString(disciplin.getTræningsTider());
-        }
-        return tider;
-        //svømmediscipliner.get(0).træningstiderTilString() + svømmediscipliner.get(1).træningstiderTilString() + svømmediscipliner.get(2).træningstiderTilString() + svømmediscipliner.get(3).træningstiderTilString();
-    }
-
-    public String getStævnetiderSomString() {
-        String tider = "";
-        for (Svømmedisciplin disciplin : svømmediscipliner) {
-            tider += Svømmedisciplin.stævnetiderTilString(disciplin.getStævneTider());
-        }
-        return tider;
-        //svømmediscipliner.get(0).stævnetiderTilString() + svømmediscipliner.get(1).stævnetiderTilString() + svømmediscipliner.get(2).stævnetiderTilString() + svømmediscipliner.get(3).stævnetiderTilString();
-    }
-
     public ArrayList<Svømmedisciplin> getSvømmediscipliner() {
         return svømmediscipliner;
     }
 
+    // Metode der returnerer medlemmet som String i et format der stemmer overens med det, der skrives ind i vores AlleMedlemmer.csv
     public String genererCSV() {
         StringBuilder csvLinje = new StringBuilder();
         csvLinje.append(navn).append(",")
@@ -181,6 +155,7 @@ public class Medlem {
         return csvLinje.toString();
     }
 
+    // Metode der skriver svømmetider i vores CSV-format
     public String svømmetiderTilCsv(ArrayList<Svømmetid> tider) {
         if (tider == null || tider.isEmpty()) {
             return "";
@@ -196,6 +171,7 @@ public class Medlem {
         return csvTider.toString();
     }
 
+    // Metode der skriver stævnetider i vores CSV-format
     public String stævnetiderTilCsv(ArrayList<Stævnetid> tider) {
         if (tider == null || tider.isEmpty()) {
             return "";
@@ -214,9 +190,10 @@ public class Medlem {
     }
 
 
-    // toString-metode for at returnere en String af et Medlem-objekt
+    // toString-metode for at returnere en String af et Model.Medlem-objekt
+    @Override
     public String toString() {
-        return "- Medlem:\n" +
+        return "- Model.Medlem:\n" +
                 "  Navn: " + navn + "\n" +
                 "  Fødselsdato: " + KonsolHandler.LocalDateToString(fødselsDato) + "\n" +
                 "  Medlemskategori: " + medlemstypeEnum + "\n";
