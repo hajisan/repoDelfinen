@@ -1,3 +1,7 @@
+package Controller;
+
+import Model.Medlem;
+
 import java.io.IOException;
 import java.util.ArrayList;
 

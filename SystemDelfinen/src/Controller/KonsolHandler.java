@@ -1,3 +1,7 @@
+package Controller;
+
+import Model.*;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,7 +14,7 @@ public class KonsolHandler {
     FilStyrer filStyrer;
     KontingentStyrer kontingentStyrer;
 
-    //Constructor initialiserer en FilStyrer og KontingentStyrer
+    //Constructor initialiserer en Controller.FilStyrer og Controller.KontingentStyrer
     public KonsolHandler() {
         filStyrer = new FilStyrer();
         kontingentStyrer = new KontingentStyrer();
@@ -24,7 +28,7 @@ public class KonsolHandler {
         System.out.println("Registreret ny tid for " + disciplin + ": " + svømmetid);
     }
 
-    // Metode der tilføjer en Stævnetid til det valgte medlem
+    // Metode der tilføjer en Model.Stævnetid til det valgte medlem
     public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, DisciplinNavne disciplin, LocalDate dato, String lokalitet) {
         System.out.println("Registrerer tid for disciplinen: " + disciplin);
         Stævnetid stævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
@@ -130,9 +134,9 @@ public class KonsolHandler {
                         } catch (IOException e) {
                             System.out.println("Fejl ved læsning af fil: " + e.getMessage());
                         }
-                        System.out.println("Stævnetid registreret og gemt.");
+                        System.out.println("Model.Stævnetid registreret og gemt.");
                     } else {
-                        System.out.println("Medlem ikke fundet.");
+                        System.out.println("Model.Medlem ikke fundet.");
                     }
                     break;
                 case 3:// Vi scanner efter nødvendige oplysninger, og gemmer i midletidige variabler
@@ -159,7 +163,7 @@ public class KonsolHandler {
                         }
                         System.out.println("Træningstid registreret og gemt.");
                     } else {
-                        System.out.println("Medlem ikke fundet.");
+                        System.out.println("Model.Medlem ikke fundet.");
                     }
                     break;
                 case 4:

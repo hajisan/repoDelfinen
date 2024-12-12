@@ -1,3 +1,6 @@
+package Model;
+
+import Controller.KonsolHandler;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -9,7 +12,7 @@ public class Medlem {
     private boolean restance = false; // Angiver om medlemmet er i restance
     private ArrayList<Svømmedisciplin> svømmediscipliner; // Liste over svømmediscipliner, som indeholder tider for hver disciplin
 
-    // Constructor initialiserer et Medlem-objekt
+    // Constructor initialiserer et Model.Medlem-objekt
     public Medlem(String navn, LocalDate fødselsdato, String medlemsKategori) {
         // Tjekker om navnet er null eller tomt og kaster en IllegalArgumentException hvis det er tilfældet
         if (navn == null || navn.isEmpty()) {
@@ -57,7 +60,15 @@ public class Medlem {
                 return svømmedisciplin;
             }
         }
-        return null;
+        return switch (disciplin.toString()) {
+        case "Butterfly" -> new Svømmedisciplin(DisciplinNavne.BUTTERFLY);
+        case "Crawl" -> new Svømmedisciplin(DisciplinNavne.CRAWL);
+        case "Rygcrawl" -> new Svømmedisciplin(DisciplinNavne.RYGCRAWL);
+        case "Brystsvømning" -> new Svømmedisciplin(DisciplinNavne.BRYSTSVØMNING);
+            default -> new Svømmedisciplin(DisciplinNavne.BUTTERFLY);
+        };
+
+
     }
 
 
@@ -179,10 +190,10 @@ public class Medlem {
     }
 
 
-    // toString-metode for at returnere en String af et Medlem-objekt
+    // toString-metode for at returnere en String af et Model.Medlem-objekt
     @Override
     public String toString() {
-        return "- Medlem:\n" +
+        return "- Model.Medlem:\n" +
                 "  Navn: " + navn + "\n" +
                 "  Fødselsdato: " + KonsolHandler.LocalDateToString(fødselsDato) + "\n" +
                 "  Medlemskategori: " + medlemstypeEnum + "\n";

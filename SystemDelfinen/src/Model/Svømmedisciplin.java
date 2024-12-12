@@ -1,14 +1,13 @@
-import java.time.Duration;
+package Model;
+
 import java.util.ArrayList;
-import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.Scanner;
 
 public class Svømmedisciplin {
     private DisciplinNavne disciplin; //Her bruges disciplinNavne enum klassen
-    protected ArrayList<Svømmetid> træningsTider; // Liste over træningstider
-    protected ArrayList<Stævnetid> stævneTider; // Liste over stævnetider
-    protected Svømmetid bedsteTid;
+    private ArrayList<Svømmetid> træningsTider; // Liste over træningstider
+    private ArrayList<Stævnetid> stævneTider; // Liste over stævnetider
+    private Svømmetid bedsteTid;
 
 
     //Constructor

@@ -1,3 +1,5 @@
+package Model;
+
 public enum DisciplinNavne {
     //Enumkonstanter der repræsenterer de fire svømmearter
     BUTTERFLY,

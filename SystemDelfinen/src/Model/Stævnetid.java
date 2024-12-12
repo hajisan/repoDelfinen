@@ -1,7 +1,10 @@
+package Model;
+
+import Controller.KonsolHandler;
 import java.time.Duration;
 import java.time.LocalDate;
 
-public class Stævnetid extends Svømmetid{
+public class Stævnetid extends Svømmetid {
     private String lokalitet;
 
     // Constructor der tager en ekstra parameter, String lokalitet, kalder superklassens constructor og initialiserer den nye attribut

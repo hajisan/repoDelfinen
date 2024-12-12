@@ -1,3 +1,6 @@
+package Model;
+
+import Controller.KonsolHandler;
 import java.time.Duration;
 import java.time.LocalDate;
 

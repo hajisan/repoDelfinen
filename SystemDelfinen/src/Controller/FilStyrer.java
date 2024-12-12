@@ -1,3 +1,7 @@
+package Controller;
+
+import Model.*;
+
 import java.io.*;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -91,7 +95,7 @@ public class FilStyrer {
     // Gem træningstider
     public void gemTræningstider(Medlem medlem, BufferedWriter writer) throws IOException {
         for (Svømmedisciplin disciplin : medlem.getSvømmediscipliner()) {
-            writer.write(medlem.svømmetiderTilCsv(disciplin.træningsTider));
+            writer.write(medlem.svømmetiderTilCsv(disciplin.getTræningsTider()));
         }
 
     }
@@ -99,7 +103,7 @@ public class FilStyrer {
     // Gem stævnetider
     public void gemStævnetider(Medlem medlem, BufferedWriter writer) throws IOException {
         for (Svømmedisciplin disciplin : medlem.getSvømmediscipliner()) {
-            writer.write(medlem.stævnetiderTilCsv(disciplin.stævneTider));
+            writer.write(medlem.stævnetiderTilCsv(disciplin.getStævneTider()));
         }
     }
 
@@ -108,7 +112,7 @@ public class FilStyrer {
         ArrayList<Medlem> medlemmer = læsAlleMedlemmer();
         medlemmer.add(nytMedlem);
         gemAlleMedlemmer(medlemmer);
-        System.out.println("Medlem tilføjet og gemt.");
+        System.out.println("Model.Medlem tilføjet og gemt.");
     }
 
     public String getFilNavn() {

@@ -1,3 +1,5 @@
+package Model;
+
 public enum Medlemstyper {
     //De forskellige typer medlemskaber der har forskellige priser
     AKTIV_JUNIOR,
