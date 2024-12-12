@@ -36,7 +36,7 @@ public class FilStyrer {
                 String navn = fields[0];
                 LocalDate fødselsdato = KonsolHandler.stringToLocalDate(fields[1]);
                 String medlemskategori = fields[2];
-                boolean restance = fields[3].equalsIgnoreCase("Ja");
+                boolean restance = fields[3].equalsIgnoreCase("true");
                 Medlem medlem = new Medlem(navn, fødselsdato, medlemskategori);
                 medlem.setRestance(restance);
 
@@ -67,17 +67,23 @@ public class FilStyrer {
                         }
                     }
                 }
-
                 medlemmer.add(medlem); // Tilføj medlemmet til listen
             }
         }
-
         return medlemmer;
     }
+    /*
+    public void skrivNyeSvømmetider(ArrayList<Medlem> medlemmer, String medlemNavn, String nySvømmetid) {
+        File file = new File(filNavn);
+        for (Medlem medlem : medlemmer) {
+            if (medlem.getNavn().equalsIgnoreCase(medlemNavn)) {
 
+            }
+        }
 
+    }
 
-
+    */
 
     /*
      Gemmer alle medlemmer til CSV-filen
@@ -87,10 +93,10 @@ public class FilStyrer {
     public void gemAlleMedlemmer(ArrayList<Medlem> medlemmer) {
         File file = new File(filNavn);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             for (Medlem medlem : medlemmer) { //For each loop der itererer gennem vores array af medlemmer
                 // Gem medlem
-                writer.write("Medlem," + medlem.getNavn() + "," + KonsolHandler.LocalDateToString(medlem.getFødselsdato()) + "," + medlem.getMedlemstypeEnum() + "," + "Træningstider" + "," + medlem.getSvømmetiderSomString() + "," + "Stævnetider" + "," + medlem.getStævnetiderSomString() + "," + "Restance" + "," + medlem.getRestance());// her skrives informationen ind i CSV filen i det
+                writer.write(medlem.genererCSV());// her skrives informationen ind i CSV filen i det
                 writer.newLine(); // her går vi videre til næste linje
 
                 // Gem træningstider
@@ -108,48 +114,16 @@ public class FilStyrer {
 
     public void gemTræningstider(Medlem medlem, BufferedWriter writer) throws IOException {
         // Gem træningstider
-        for (Svømmetid træningstid : medlem.getSvømmetider("Butterfly")) { //For each loop, for svømmetider,
-            writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                    træningstid.getDisciplin() + "," + træningstid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(træningstid.getDato()));
-            writer.newLine(); // Ny linje i CSV-filen
+        for (Svømmedisciplin disciplin : medlem.getSvømmediscipliner()) {
+            writer.write(medlem.svømmetiderTilCsv(disciplin.træningsTider));
         }
-        for (Svømmetid træningstid : medlem.getSvømmetider("Crawl")) { //For each loop, for svømmetider,
-            writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                    træningstid.getDisciplin() + "," + træningstid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(træningstid.getDato()));
-            writer.newLine(); // Ny linje i CSV-filen
-        }
-        for (Svømmetid træningstid : medlem.getSvømmetider("Rygcrawl")) { //For each loop, for svømmetider,
-            writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                    træningstid.getDisciplin() + "," + træningstid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(træningstid.getDato()));
-            writer.newLine(); // Ny linje i CSV-filen
-        }
-        for (Svømmetid træningstid : medlem.getSvømmetider("Brystsvømning")) { //For each loop, for svømmetider,
-            writer.write("Træningstid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                    træningstid.getDisciplin() + "," + træningstid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(træningstid.getDato()));
-            writer.newLine(); // Ny linje i CSV-filen
-        }
+
     }
 
     public void gemStævnetider(Medlem medlem, BufferedWriter writer) throws IOException {
-        for (Svømmetid stævnetid : medlem.getStævnetider("Butterfly")) { //For each loop, for svømmetider,
-            writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                    stævnetid.getDisciplin() + "," + stævnetid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(stævnetid.getDato()));
-            writer.newLine(); // Ny linje i CSV-filen
-        }
-        for (Svømmetid stævnetid : medlem.getStævnetider("Crawl")) { //For each loop, for svømmetider,
-            writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                    stævnetid.getDisciplin() + "," + stævnetid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(stævnetid.getDato()));
-            writer.newLine(); // Ny linje i CSV-filen
-        }
-        for (Svømmetid stævnetid : medlem.getStævnetider("Rygcrawl")) { //For each loop, for svømmetider,
-            writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                    stævnetid.getDisciplin() + "," + stævnetid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(stævnetid.getDato()));
-            writer.newLine(); // Ny linje i CSV-filen
-        }
-        for (Svømmetid stævnetid : medlem.getStævnetider("Brystsvømning")) { //For each loop, for svømmetider,
-            writer.write("Stævnetid," + medlem.getNavn() + "," + //tilføjer tiden til medlemmet
-                    stævnetid.getDisciplin() + "," + stævnetid.getTid().toSeconds() + "," + KonsolHandler.LocalDateToString(stævnetid.getDato()));
-            writer.newLine(); // Ny linje i CSV-filen
+
+        for (Svømmedisciplin disciplin : medlem.getSvømmediscipliner()) {
+            writer.write(medlem.stævnetiderTilCsv(disciplin.stævneTider));
         }
     }
 

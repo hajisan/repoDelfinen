@@ -28,14 +28,18 @@ public class KonsolHandler {
 
     //Tilføjer en træningstid til det valgte medlem
     public void tilføjSvømmetidTilMedlem(Medlem medlem, Duration tid, DisciplinNavne disciplin, LocalDate dato) {
+        System.out.println("Registrerer tid for disciplinen: " + disciplin);
         Svømmetid svømmetid = new Svømmetid(disciplin, tid, dato);
         medlem.tilføjTræningstid(svømmetid);
+        System.out.println("Registreret ny tid for " + disciplin + ": " + svømmetid);
     }
 
     //Tilføjer en Stævnetid til det valgte medlem
     public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, DisciplinNavne disciplin, LocalDate dato, String lokalitet) {
+        System.out.println("Registrerer tid for disciplinen: " + disciplin);
         Stævnetid stævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
         medlem.tilføjStævnetid(stævnetid);
+        System.out.println("Registreret ny tid for " + disciplin + ": " + stævnetid);
     }
 
     //Returnerer en ArrayList af et givent medlems Svømmetider
@@ -58,7 +62,7 @@ public class KonsolHandler {
         return alleStævnetider;
     }
 
-    // Metode der tager en String af formen "s,ms", hvor s er sekunder og ms er millisekunder
+    // Metode der tager en String af formen "mm:ss", hvor m er minutter og s er sekunder
     public static Duration stringToDuration(String tid) {
         try {
             String[] parts = tid.split(":"); // Split tid i minutter og sekunder
@@ -66,12 +70,12 @@ public class KonsolHandler {
             long sekunder = Long.parseLong(parts[1]);
             return Duration.ofMinutes(minutter).plusSeconds(sekunder);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            System.out.println("Fejl: Ugyldigt format for Duration. Brug formatet MM:SS.");
+            System.out.println("Fejl: Ugyldigt format for Duration. Brug formatet mm:ss.");
             throw new IllegalArgumentException("Duration-formatet er ugyldigt.");
         }
     }
 
-    // Hjælpefunktion til at formatere Duration som en læsbar streng
+    // Hjælpefunktion til at formatere Duration som en læsbar streng i formen
     public static String durationToString(Duration duration) {
         long minutter = duration.toMinutes();
         long sekunder = duration.minusMinutes(minutter).getSeconds();
@@ -194,7 +198,7 @@ public class KonsolHandler {
                         System.out.println("Ingen medlemmer fundet."); //hvis ikke der er indhold, giv meddelse
                     } else {
                         for (Medlem medlem : medlemmer) {
-                            System.out.println(medlem); //ellers iterer igennem listen af medllemmer og print dem
+                            System.out.println(medlem); //ellers itererer igennem listen af medlemmer og print dem
                         }
                     }
                     break;

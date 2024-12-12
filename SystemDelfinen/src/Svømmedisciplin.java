@@ -30,9 +30,9 @@ public class Svømmedisciplin {
 
     // Overloaded version af ovenstående metode
     public void registrerTræningsTid(Svømmetid svømmetid) {
-        System.out.println("Registrerer tid for disciplinen: " + disciplin);
+
         træningsTider.add(svømmetid); //Kalder tilføj metoden får at gøre svømmetid en del af medlem
-        System.out.println("Registreret ny tid for " + disciplin + ": " + svømmetid);
+
     }
 
     /*
@@ -47,9 +47,9 @@ public class Svømmedisciplin {
 
     //metode til at registrere stævnetid
     public void registrerStævneTid(Stævnetid stævnetid) {
-        System.out.println("Registrerer tid for disciplinen: " + disciplin);
+
         stævneTider.add(stævnetid);
-        System.out.println("Registreret ny tid for " + disciplin + ": " + stævnetid);
+
     }
 
     //metode til at få top 5

@@ -17,9 +17,7 @@ public class Medlem {
             throw new IllegalArgumentException("Navn må ikke være tomt.");
         }
         this.navn = navn;
-        System.out.println(this.navn);
         this.fødselsDato = fødselsdato;
-        System.out.println(this.fødselsDato);
         svømmediscipliner= new ArrayList<>();
         svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.BUTTERFLY));
         svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.CRAWL));
@@ -30,14 +28,11 @@ public class Medlem {
             case "aktiv":
                 if (LocalDate.now().minusYears(18).isBefore(this.fødselsDato)) {
                     this.medlemstypeEnum = Medlemstyper.AKTIV_JUNIOR;
-                    System.out.println(this.medlemstypeEnum);
                 } else if (LocalDate.now().minusYears(18).isAfter(this.fødselsDato) &&
                         LocalDate.now().minusYears(60).isBefore(this.fødselsDato)) {
                     this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR;
-                    System.out.println(this.medlemstypeEnum);
                 } else {
                     this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR_60PLUS;
-                    System.out.println(this.medlemstypeEnum);
                 }
                 break;
             case "passiv":
@@ -176,55 +171,54 @@ public class Medlem {
         csvLinje.append(navn).append(",")
                 .append(KonsolHandler.LocalDateToString(fødselsDato)).append(",")
                 .append(medlemstypeEnum).append(",")
-                .append(restance ? "Ja" : "Nej");
+                .append(restance ? "true" : "false");
 
         for (Svømmedisciplin disciplin : svømmediscipliner) {
-            csvLinje.append(",").append(formatTider(disciplin.getTræningsTider()));
-            csvLinje.append(",").append(formatStævnetider(disciplin.getStævneTider()));
+            //csvLinje.append()
+            csvLinje.append(",").append(svømmetiderTilCsv(disciplin.getTræningsTider()));
+            csvLinje.append(",").append(stævnetiderTilCsv(disciplin.getStævneTider()));
         }
-
         return csvLinje.toString();
     }
 
-    private String formatTider(ArrayList<Svømmetid> tider) {
+    public String svømmetiderTilCsv(ArrayList<Svømmetid> tider) {
         if (tider == null || tider.isEmpty()) {
             return "";
         }
-        StringBuilder formateredeTider = new StringBuilder();
+        StringBuilder csvTider = new StringBuilder();
         for (Svømmetid tid : tider) {
-            formateredeTider.append(KonsolHandler.durationToString(tid.getTid()))
+            csvTider.append(KonsolHandler.durationToString(tid.getTid()))
                     .append("|")
                     .append(KonsolHandler.LocalDateToString(tid.getDato()))
                     .append(";");
         }
-        formateredeTider.setLength(formateredeTider.length() - 1); // Fjern sidste semikolon
-        return formateredeTider.toString();
+        csvTider.setLength(csvTider.length() - 1); // Fjern sidste semikolon
+        return csvTider.toString();
     }
 
-    private String formatStævnetider(ArrayList<Stævnetid> tider) {
+    public String stævnetiderTilCsv(ArrayList<Stævnetid> tider) {
         if (tider == null || tider.isEmpty()) {
             return "";
         }
-        StringBuilder formateredeTider = new StringBuilder();
+        StringBuilder csvTider = new StringBuilder();
         for (Stævnetid tid : tider) {
-            formateredeTider.append(KonsolHandler.durationToString(tid.getTid()))
+            csvTider.append(KonsolHandler.durationToString(tid.getTid()))
                     .append("|")
                     .append(KonsolHandler.LocalDateToString(tid.getDato()))
                     .append("|")
                     .append(tid.getLokalitet())
                     .append(";");
         }
-        formateredeTider.setLength(formateredeTider.length() - 1); // Fjern sidste semikolon
-        return formateredeTider.toString();
+        csvTider.setLength(csvTider.length() - 1); // Fjern sidste semikolon
+        return csvTider.toString();
     }
 
 
     // toString-metode for at returnere en String af et Medlem-objekt
     public String toString() {
-        return "Medlem{" +
-                "Navn: " + navn + "\n" +
-                "Fødselsdato: " + KonsolHandler.LocalDateToString(fødselsDato) + "\n" +
-                "Medlemskategori: " + medlemstypeEnum + "\n" +
-                "}";
+        return "- Medlem:\n" +
+                "  Navn: " + navn + "\n" +
+                "  Fødselsdato: " + KonsolHandler.LocalDateToString(fødselsDato) + "\n" +
+                "  Medlemskategori: " + medlemstypeEnum + "\n";
     }
 }
