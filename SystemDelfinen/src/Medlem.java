@@ -21,10 +21,10 @@ public class Medlem {
         this.fødselsDato = fødselsdato;
         System.out.println(this.fødselsDato);
         svømmediscipliner= new ArrayList<>();
-        svømmediscipliner.add(findEllerOpretSvømmedisciplin(disciplinNavne.BUTTERFLY));
-        svømmediscipliner.add(findEllerOpretSvømmedisciplin(disciplinNavne.CRAWL));
-        svømmediscipliner.add(findEllerOpretSvømmedisciplin(disciplinNavne.RYGCRAWL));
-        svømmediscipliner.add(findEllerOpretSvømmedisciplin(disciplinNavne.BRYSTSVØMNING));
+        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.BUTTERFLY));
+        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.CRAWL));
+        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.RYGCRAWL));
+        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.BRYSTSVØMNING));
 
         switch (medlemsKategori.toLowerCase().trim()) {
             case "aktiv":
@@ -55,7 +55,7 @@ public class Medlem {
 
     }
 
-    public Svømmedisciplin findEllerOpretSvømmedisciplin(disciplinNavne disciplin) {
+    public Svømmedisciplin findEllerOpretSvømmedisciplin(DisciplinNavne disciplin) {
         for (Svømmedisciplin svømmedisciplin : svømmediscipliner) {
             if (svømmedisciplin.getDisciplinNavn().equals(disciplin.name())) {
                 return svømmedisciplin;
@@ -150,9 +150,9 @@ public class Medlem {
     }
 
     public String getSvømmetiderSomString() {
-        String tider = "";
+        String tider = null;
         for (Svømmedisciplin disciplin : svømmediscipliner) {
-            tider += disciplin.træningstiderTilString();
+            tider += Svømmedisciplin.træningstiderTilString(disciplin.getTræningsTider());
         }
         return tider;
         //svømmediscipliner.get(0).træningstiderTilString() + svømmediscipliner.get(1).træningstiderTilString() + svømmediscipliner.get(2).træningstiderTilString() + svømmediscipliner.get(3).træningstiderTilString();
@@ -161,7 +161,7 @@ public class Medlem {
     public String getStævnetiderSomString() {
         String tider = "";
         for (Svømmedisciplin disciplin : svømmediscipliner) {
-            tider += disciplin.stævnetiderTilString();
+            tider += Svømmedisciplin.stævnetiderTilString(disciplin.getStævneTider());
         }
         return tider;
         //svømmediscipliner.get(0).stævnetiderTilString() + svømmediscipliner.get(1).stævnetiderTilString() + svømmediscipliner.get(2).stævnetiderTilString() + svømmediscipliner.get(3).stævnetiderTilString();
@@ -170,6 +170,54 @@ public class Medlem {
     public ArrayList<Svømmedisciplin> getSvømmediscipliner() {
         return svømmediscipliner;
     }
+
+    public String genererCSV() {
+        StringBuilder csvLinje = new StringBuilder();
+        csvLinje.append(navn).append(",")
+                .append(KonsolHandler.LocalDateToString(fødselsDato)).append(",")
+                .append(medlemstypeEnum).append(",")
+                .append(restance ? "Ja" : "Nej");
+
+        for (Svømmedisciplin disciplin : svømmediscipliner) {
+            csvLinje.append(",").append(formatTider(disciplin.getTræningsTider()));
+            csvLinje.append(",").append(formatStævnetider(disciplin.getStævneTider()));
+        }
+
+        return csvLinje.toString();
+    }
+
+    private String formatTider(ArrayList<Svømmetid> tider) {
+        if (tider == null || tider.isEmpty()) {
+            return "";
+        }
+        StringBuilder formateredeTider = new StringBuilder();
+        for (Svømmetid tid : tider) {
+            formateredeTider.append(KonsolHandler.durationToString(tid.getTid()))
+                    .append("|")
+                    .append(KonsolHandler.LocalDateToString(tid.getDato()))
+                    .append(";");
+        }
+        formateredeTider.setLength(formateredeTider.length() - 1); // Fjern sidste semikolon
+        return formateredeTider.toString();
+    }
+
+    private String formatStævnetider(ArrayList<Stævnetid> tider) {
+        if (tider == null || tider.isEmpty()) {
+            return "";
+        }
+        StringBuilder formateredeTider = new StringBuilder();
+        for (Stævnetid tid : tider) {
+            formateredeTider.append(KonsolHandler.durationToString(tid.getTid()))
+                    .append("|")
+                    .append(KonsolHandler.LocalDateToString(tid.getDato()))
+                    .append("|")
+                    .append(tid.getLokalitet())
+                    .append(";");
+        }
+        formateredeTider.setLength(formateredeTider.length() - 1); // Fjern sidste semikolon
+        return formateredeTider.toString();
+    }
+
 
     // toString-metode for at returnere en String af et Medlem-objekt
     public String toString() {

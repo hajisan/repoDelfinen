@@ -1,4 +1,4 @@
-public enum disciplinNavne {
+public enum DisciplinNavne {
     //Enumkonstanter der repræsenterer de fire svømmearter
     BUTTERFLY,
     CRAWL,

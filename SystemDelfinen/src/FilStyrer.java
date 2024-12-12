@@ -18,7 +18,7 @@ public class FilStyrer {
      */
 
     // Læs alle medlemmer fra CSV-filen
-    public static ArrayList<Medlem> læsAlleMedlemmer() {
+    public static ArrayList<Medlem> læsAlleMedlemmer() throws IOException {
         ArrayList<Medlem> medlemmer = new ArrayList<>();
         File file = new File(filNavn);
 
@@ -27,102 +27,57 @@ public class FilStyrer {
             return medlemmer;
         }
 
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-
-            //her går vi ind og aflæser hver linje. Da det er CSV (comma seperated version), er hver data imellem kommaer
             while ((line = reader.readLine()) != null) {
-                String[] parts = new String[line.split(",").length];
-                for (int i = 0; i < parts.length; i++) {
-                    parts[i] = line.split(",")[i];
-                }
-                if (parts[0].equalsIgnoreCase("Medlem")) {
-                    // Læs medlem
-                    String navn = parts[1].trim(); //på plads 1 har vi navn
-                    LocalDate fødselsdato = KonsolHandler.stringToLocalDate(parts[2].trim()); //fødselsdagsdato der laves om til string
-                    String medlemskategori = parts[3].trim(); //er du aktiv eller passivt medlem? junior eller senior?
-                    Medlem medlem = new Medlem(navn, fødselsdato, medlemskategori);
-                    medlemmer.add(medlem); //tilføjer medlemmet til arraylisten medlemmer
-                    if (parts.length >= 5 && parts[4].equalsIgnoreCase("Træningstider")) {
-                        String[] træningstiderIParts = parts[5].split(";");
-                        for (String partToSplitAgain : træningstiderIParts) {
-                            switch (partToSplitAgain.split(":")[0].toLowerCase().trim()) {
-                                case "butterfly":
-                                    medlem.tilføjTræningstid(new Svømmetid(disciplinNavne.BUTTERFLY, KonsolHandler.stringToDuration(træningstiderIParts[1]), KonsolHandler.stringToLocalDate(træningstiderIParts[2])));
-                                    break;
-                                case "crawl":
-                                    medlem.tilføjTræningstid(new Svømmetid(disciplinNavne.CRAWL, KonsolHandler.stringToDuration(træningstiderIParts[1]), KonsolHandler.stringToLocalDate(træningstiderIParts[2])));
-                                    break;
-                                case "rygcrawl":
-                                    medlem.tilføjTræningstid(new Svømmetid(disciplinNavne.RYGCRAWL, KonsolHandler.stringToDuration(træningstiderIParts[1]), KonsolHandler.stringToLocalDate(træningstiderIParts[2])));
-                                    break;
-                                case "brystsvømning":
-                                    medlem.tilføjTræningstid(new Svømmetid(disciplinNavne.BRYSTSVØMNING, KonsolHandler.stringToDuration(træningstiderIParts[1]), KonsolHandler.stringToLocalDate(træningstiderIParts[2])));
-                                    break;
-                            }
+                String[] fields = line.split(","); // Del linjen i felter
+
+                // Opret medlem
+                String navn = fields[0];
+                LocalDate fødselsdato = KonsolHandler.stringToLocalDate(fields[1]);
+                String medlemskategori = fields[2];
+                boolean restance = fields[3].equalsIgnoreCase("Ja");
+                Medlem medlem = new Medlem(navn, fødselsdato, medlemskategori);
+                medlem.setRestance(restance);
+
+                // Parse træningstider og stævnetider for hver disciplin
+                int disciplinIndex = 0;
+                for (int i = 4; i < fields.length; i += 2) { // Træning og stævne felter
+                    DisciplinNavne disciplinNavn = DisciplinNavne.values()[disciplinIndex++];
+                    Svømmedisciplin disciplin = medlem.findEllerOpretSvømmedisciplin(disciplinNavn);
+
+                    // Træningstider
+                    if (!fields[i].isEmpty()) {
+                        for (String tidStr : fields[i].split(";")) {
+                            String[] parts = tidStr.split("\\|");
+                            Duration tid = KonsolHandler.stringToDuration(parts[0]);
+                            LocalDate dato = KonsolHandler.stringToLocalDate(parts[1]);
+                            disciplin.registrerTræningsTid(new Svømmetid(disciplinNavn, tid, dato));
                         }
                     }
-                    if (parts.length >= 7 && parts[6].equalsIgnoreCase("Stævnetider")) {
-                        String[] stævnetiderIParts = parts[7].split(";");
-                        for (String partToSplitAgain : stævnetiderIParts) {
-                            switch (partToSplitAgain.split(":")[0].toLowerCase().trim()) {
-                                case "butterfly":
-                                    medlem.tilføjTræningstid(new Stævnetid(disciplinNavne.BUTTERFLY, KonsolHandler.stringToDuration(stævnetiderIParts[1]), KonsolHandler.stringToLocalDate(stævnetiderIParts[2]), stævnetiderIParts[3]));
-                                    break;
-                                case "crawl":
-                                    medlem.tilføjTræningstid(new Stævnetid(disciplinNavne.CRAWL, KonsolHandler.stringToDuration(stævnetiderIParts[1]), KonsolHandler.stringToLocalDate(stævnetiderIParts[2]), stævnetiderIParts[3]));
-                                    break;
-                                case "rygcrawl":
-                                    medlem.tilføjTræningstid(new Stævnetid(disciplinNavne.RYGCRAWL, KonsolHandler.stringToDuration(stævnetiderIParts[1]), KonsolHandler.stringToLocalDate(stævnetiderIParts[2]), stævnetiderIParts[3]));
-                                    break;
-                                case "brystsvømning":
-                                    medlem.tilføjTræningstid(new Stævnetid(disciplinNavne.BRYSTSVØMNING, KonsolHandler.stringToDuration(stævnetiderIParts[1]), KonsolHandler.stringToLocalDate(stævnetiderIParts[2]), stævnetiderIParts[3]));
-                                    break;
-                            }
+
+                    // Stævnetider
+                    if (i + 1 < fields.length && !fields[i + 1].isEmpty()) {
+                        for (String tidStr : fields[i + 1].split(";")) {
+                            String[] parts = tidStr.split("\\|");
+                            Duration tid = KonsolHandler.stringToDuration(parts[0]);
+                            LocalDate dato = KonsolHandler.stringToLocalDate(parts[1]);
+                            String lokalitet = parts[2];
+                            disciplin.registrerStævneTid(new Stævnetid(disciplinNavn, tid, dato, lokalitet));
                         }
                     }
-                    if (parts.length >= 10 && parts[8].equalsIgnoreCase("restance")) {
-                        medlem.setRestance(Boolean.parseBoolean(parts[9]));
-                    }
-                }
-                    /*
-                    // Læs træningstid
-                    String navn = parts[1].trim(); //Vi tager navnet på medlemmet
-                    disciplinNavne disciplin = disciplinNavne.valueOf(parts[2].trim()); //Hvilken disciplin har de deltaget i
-                    Duration tid = Duration.ofSeconds(Long.parseLong(parts[3].trim())); //hvor hurtgige var de
-                    LocalDate dato = KonsolHandler.stringToLocalDate(parts[4].trim()); // datoen hvor på det skete i let læseligt format
-
-                    Medlem medlem = findMedlemByName(medlemmer, navn); //den her mini metode, er bare for at finde det rigtige medlem
-                    // og tilføje den disciplin og tid til dem
-                    if (medlem != null) {
-                        Svømmetid svømmetid = new Svømmetid(disciplin, tid, dato);
-                        medlem.tilføjTræningstid(svømmetid);
-                    }
-                 else if (parts[0].equalsIgnoreCase("Stævnetid")) {
-                    // Læs stævnetid
-                    String navn = parts[1].trim();
-                    disciplinNavne disciplin = disciplinNavne.valueOf(parts[2].trim());
-                    Duration tid = Duration.ofSeconds(Long.parseLong(parts[3].trim()));
-                    LocalDate dato = KonsolHandler.stringToLocalDate(parts[4].trim());
-                    String lokalitet = parts[5].trim(); //her er det det samme som træningstider, der er bare også en string for lokalitet
-
-                    Medlem medlem = findMedlemByName(medlemmer, navn);
-                    if (medlem != null) {
-                        Stævnetid stævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
-                        medlem.tilføjStævnetid(stævnetid);
-                    }
                 }
 
-                   */
+                medlemmer.add(medlem); // Tilføj medlemmet til listen
             }
-
-
-        } catch (IOException e) {
-            System.out.println("Fejl ved læsning af fil: " + e.getMessage());
         }
+
         return medlemmer;
     }
+
+
+
+
 
     /*
      Gemmer alle medlemmer til CSV-filen
@@ -203,7 +158,7 @@ public class FilStyrer {
     Tilføjer et nyt medlem til CSV-filen.
     Et nytMedlem Medlem-objekt, der skal tilføjes
      */
-    public void tilføjMedlem(Medlem nytMedlem) {
+    public void tilføjMedlem(Medlem nytMedlem) throws IOException{
         ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs eksisterende medlemmer
         medlemmer.add(nytMedlem); // Tilføj det nye medlem
         gemAlleMedlemmer(medlemmer); // Gem alle medlemmer tilbage til filen
@@ -214,7 +169,7 @@ public class FilStyrer {
      Sletter et medlem fra CSV-filen baseret på dets navn.
      Finder eksisterendeMedlem Medlem-objekt, der skal slettes
      */
-    public void sletMedlem(Medlem eksisterendeMedlem) {
+    public void sletMedlem(Medlem eksisterendeMedlem) throws IOException{
         ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs eksisterende medlemmer
 
         // Forsøg at fjerne medlemmet
@@ -230,7 +185,7 @@ public class FilStyrer {
     /*
     Redigerer oplysninger om et medlem baseret på dets navn.
     */
-    public void redigerMedlem() {
+    public void redigerMedlem() throws  IOException{
         ArrayList<Medlem> medlemmer = læsAlleMedlemmer(); // Læs eksisterende medlemmer
         Scanner sc = new Scanner(System.in);
 
@@ -297,7 +252,7 @@ public class FilStyrer {
 
                 // Udpak data
                 String medlemNavn = data[0];
-                disciplinNavne disciplin = disciplinNavne.valueOf(data[1]);
+                DisciplinNavne disciplin = DisciplinNavne.valueOf(data[1]);
                 Duration tid = Duration.parse(data[2]);
                 LocalDate dato = LocalDate.parse(data[3]);
 

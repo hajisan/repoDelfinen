@@ -3,11 +3,11 @@ import java.time.LocalDate;
 
 public class Svømmetid {
     protected Duration tid; // Tid som en Duration
-    protected disciplinNavne disciplin; // Disciplin (fx Rygcrawl, Butterfly)
+    protected DisciplinNavne disciplin; // Disciplin (fx Rygcrawl, Butterfly)
     protected LocalDate dato; // Dato for svømmetiden
 
     // Constructor
-    public Svømmetid(disciplinNavne disciplin, Duration tid, LocalDate dato) {
+    public Svømmetid(DisciplinNavne disciplin, Duration tid, LocalDate dato) {
         this.disciplin = disciplin;
         this.tid = tid;
         this.dato = dato;
@@ -18,7 +18,7 @@ public class Svømmetid {
         return tid;
     }
 
-    public disciplinNavne getDisciplin() {
+    public DisciplinNavne getDisciplin() {
         return disciplin;
     }
 
@@ -27,7 +27,7 @@ public class Svømmetid {
     }
 
     // Metode til at tilføje svømmetid til medlemmet
-    public static void tilføjTidTilMedlem(Medlem medlem, long minutter, long sekunder, disciplinNavne disciplin, LocalDate dato) {
+    public static void tilføjTidTilMedlem(Medlem medlem, long minutter, long sekunder, DisciplinNavne disciplin, LocalDate dato) {
         if (medlem == null) {
             throw new IllegalArgumentException("Medlem må ikke være null.");
         }

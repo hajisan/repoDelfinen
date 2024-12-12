@@ -5,14 +5,14 @@ import java.util.Comparator;
 import java.util.Scanner;
 
 public class Svømmedisciplin {
-    private disciplinNavne disciplin; //Her bruges disciplinNavne enum klassen
+    private DisciplinNavne disciplin; //Her bruges disciplinNavne enum klassen
     protected ArrayList<Svømmetid> træningsTider; // Liste over træningstider
     protected ArrayList<Stævnetid> stævneTider; // Liste over stævnetider
     protected Svømmetid bedsteTid;
 
 
     //Constructor
-    public Svømmedisciplin(disciplinNavne disciplin) {
+    public Svømmedisciplin(DisciplinNavne disciplin) {
         this.disciplin = disciplin;
         this.træningsTider = new ArrayList<>();
         this.stævneTider = new ArrayList<>();
@@ -190,19 +190,34 @@ public class Svømmedisciplin {
         return træningsTider;
     }
 
-    public String træningstiderTilString() {
-        String tider = "";
-        for (Svømmetid tid : træningsTider) {
-            tider += tid.toString() + ";";
+    public static String træningstiderTilString(ArrayList<Svømmetid> træningsTider) {
+        if (træningsTider == null || træningsTider.isEmpty()) {
+            return "";
         }
-        return tider;
+        StringBuilder tiderSomString = new StringBuilder();
+        for (Svømmetid tid : træningsTider) {
+            tiderSomString.append(tid.getTid().toMinutes()).append(":")
+                    .append(tid.getTid().toSecondsPart()).append("|")
+                    .append(KonsolHandler.LocalDateToString(tid.getDato())).append(";");
+        }
+        // Fjern sidste semikolon
+        tiderSomString.setLength(tiderSomString.length() - 1);
+        return tiderSomString.toString();
     }
 
-    public String stævnetiderTilString() {
-        String tider = "";
-        for (Svømmetid tid : stævneTider) {
-            tider += tid.toString() + ";";
+    public static String stævnetiderTilString(ArrayList<Stævnetid> stævneTider) {
+        if (stævneTider == null || stævneTider.isEmpty()) {
+            return "";
         }
-        return tider;
+        StringBuilder tiderSomString = new StringBuilder();
+        for (Stævnetid tid : stævneTider) {
+            tiderSomString.append(tid.getTid().toMinutes()).append(":")
+                    .append(tid.getTid().toSecondsPart()).append("|")
+                    .append(KonsolHandler.LocalDateToString(tid.getDato())).append("|")
+                    .append(tid.getLokalitet()).append(";");
+        }
+        // Fjern sidste semikolon
+        tiderSomString.setLength(tiderSomString.length() - 1);
+        return tiderSomString.toString();
     }
 }

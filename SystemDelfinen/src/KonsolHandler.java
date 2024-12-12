@@ -27,13 +27,13 @@ public class KonsolHandler {
     }
 
     //Tilføjer en træningstid til det valgte medlem
-    public void tilføjSvømmetidTilMedlem(Medlem medlem, Duration tid, disciplinNavne disciplin, LocalDate dato) {
+    public void tilføjSvømmetidTilMedlem(Medlem medlem, Duration tid, DisciplinNavne disciplin, LocalDate dato) {
         Svømmetid svømmetid = new Svømmetid(disciplin, tid, dato);
         medlem.tilføjTræningstid(svømmetid);
     }
 
     //Tilføjer en Stævnetid til det valgte medlem
-    public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, disciplinNavne disciplin, LocalDate dato, String lokalitet) {
+    public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, DisciplinNavne disciplin, LocalDate dato, String lokalitet) {
         Stævnetid stævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
         medlem.tilføjStævnetid(stævnetid);
     }
@@ -60,7 +60,15 @@ public class KonsolHandler {
 
     // Metode der tager en String af formen "s,ms", hvor s er sekunder og ms er millisekunder
     public static Duration stringToDuration(String tid) {
-        return Duration.ofSeconds(Long.parseLong(tid.split(",")[0]), Long.parseLong(tid.split(",")[1]) * 1000);
+        try {
+            String[] parts = tid.split(":"); // Split tid i minutter og sekunder
+            long minutter = Long.parseLong(parts[0]);
+            long sekunder = Long.parseLong(parts[1]);
+            return Duration.ofMinutes(minutter).plusSeconds(sekunder);
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Fejl: Ugyldigt format for Duration. Brug formatet MM:SS.");
+            throw new IllegalArgumentException("Duration-formatet er ugyldigt.");
+        }
     }
 
     // Hjælpefunktion til at formatere Duration som en læsbar streng
@@ -73,13 +81,10 @@ public class KonsolHandler {
     public static LocalDate stringToLocalDate(String dato) {
         //Try-catch-blok der skal sørge for, at dato-Stringen er i formatet dd/mm/yyyy
         try {
-            // Split datoen ved "/" og omdan til integers
             String[] parts = dato.split("/");
-            int day = Integer.parseInt(parts[0]); // Dag
-            int month = Integer.parseInt(parts[1]); // Måned
-            int year = Integer.parseInt(parts[2]); // År
-
-            // Opret og returnér LocalDate
+            int day = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            int year = Integer.parseInt(parts[2]);
             return LocalDate.of(year, month, day);
         } catch (Exception e) {
             System.out.println("Fejl: Ugyldigt datoformat. Brug venligst formatet DD/MM/YYYY.");
@@ -88,11 +93,11 @@ public class KonsolHandler {
     }
 
     public static String LocalDateToString(LocalDate dato) {
-        return dato.toString().split("-")[2] + "/" + dato.toString().split("-")[1] + "/" + dato.toString().split("-")[0];
+        return String.format("%02d/%02d/%04d", dato.getDayOfMonth(), dato.getMonthValue(), dato.getYear());
     }
 
     // Hovedmenu til at styre systemet
-    public void startMenu() {
+    public void startMenu() throws IOException {
         Scanner scanner = new Scanner(System.in);
         boolean kørSystem = true; //go go time
 
@@ -141,7 +146,7 @@ public class KonsolHandler {
                     String lokalitet = scanner.nextLine();
                     Medlem medlemStævne = findMedlem(medlemNavnStævne);
                     if (medlemStævne != null) { //her tildeler vi dem så metoden fra tidligere der initialiserer et stævnetids-objekt
-                        disciplinNavne disciplinEnumStævne = disciplinNavne.valueOf(disciplinStævne.toUpperCase());
+                        DisciplinNavne disciplinEnumStævne = DisciplinNavne.valueOf(disciplinStævne.toUpperCase());
                         Duration tidStævneDuration = Duration.ofSeconds(tidStævne);
                         LocalDate datoParsedStævne = stringToLocalDate(datoStævne);
                         tilføjStævnetidTilMedlem(medlemStævne, tidStævneDuration, disciplinEnumStævne, datoParsedStævne, lokalitet);
@@ -168,7 +173,7 @@ public class KonsolHandler {
                     String datoTræning = scanner.nextLine();
                     Medlem medlemTræning = findMedlem(medlemNavnTræning);
                     if (medlemTræning != null) {//her tildeler vi dem så metoden fra tidligere der initialiserer et Svømmetids-objekt
-                        disciplinNavne disciplinEnumTræning = disciplinNavne.valueOf(disciplinTræning.toUpperCase());
+                        DisciplinNavne disciplinEnumTræning = DisciplinNavne.valueOf(disciplinTræning.toUpperCase());
                         Duration tidTræningDuration = Duration.ofSeconds(tidTræning);
                         LocalDate datoParsedTræning = stringToLocalDate(datoTræning);
                         tilføjSvømmetidTilMedlem(medlemTræning, tidTræningDuration, disciplinEnumTræning, datoParsedTræning);
@@ -205,7 +210,7 @@ public class KonsolHandler {
                             "RYGCRAWL, " +
                             "BRYSTSVØMNING. ");
                     String disciplinInput = scanner.nextLine();
-                    disciplinNavne disciplin = disciplinNavne.valueOf(disciplinInput.toUpperCase());
+                    DisciplinNavne disciplin = DisciplinNavne.valueOf(disciplinInput.toUpperCase());
 
                     // Find disciplinen og hent top 5 tider
                     medlemmer = filStyrer.læsAlleMedlemmer();
@@ -243,7 +248,7 @@ public class KonsolHandler {
 
 
     // Hjælpefunktion til at finde et medlem baseret på navn
-    private Medlem findMedlem(String navn) {
+    private Medlem findMedlem(String navn) throws IOException {
         // Søger efter et medlem i listen over medlemmer
         ArrayList<Medlem> medlemmer = filStyrer.læsAlleMedlemmer();
         for (Medlem medlem : medlemmer) {
