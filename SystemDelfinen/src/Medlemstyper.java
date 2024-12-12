@@ -11,7 +11,7 @@ public enum Medlemstyper {
             case PASSIV -> 500;
             case AKTIV_JUNIOR -> 1000;
             case AKTIV_SENIOR -> 1600;
-            case AKTIV_SENIOR_60PLUS -> 1600 * 0.75;
+            case AKTIV_SENIOR_60PLUS -> 1200;
         };
     }
 
@@ -22,16 +22,6 @@ public enum Medlemstyper {
             case AKTIV_JUNIOR -> "aktiv";
             case AKTIV_SENIOR -> "aktiv";
             case AKTIV_SENIOR_60PLUS -> "aktiv";
-        };
-    }
-
-
-    public String pænToString() {
-        return switch (this) {
-            case PASSIV -> "Passivt medlemskab";
-            case AKTIV_JUNIOR -> "Aktivt juniormedlemskab";
-            case AKTIV_SENIOR -> "Aktivt seniormedlemskab";
-            case AKTIV_SENIOR_60PLUS -> "Aktivt 60+-medlemskab";
         };
     }
 }

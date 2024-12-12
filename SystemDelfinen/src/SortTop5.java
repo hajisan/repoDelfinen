@@ -4,10 +4,6 @@ import java.util.stream.Collectors;
 
 public class SortTop5 {
 
-    // Tom konstruktør
-    public SortTop5() {
-    }
-
     // Denne metode forventer en liste af Svømmetid-objekter og returnerer de top 5 hurtigste
     public static ArrayList<Svømmetid> top5Svømmere(ArrayList<Svømmetid> alleTider) {
         if (alleTider == null || alleTider.isEmpty()) { //Hurtig kontrol om er overhovedet er nogle i listen

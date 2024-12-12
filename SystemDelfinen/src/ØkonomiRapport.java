@@ -3,7 +3,7 @@ import java.util.List;
 public class ØkonomiRapport extends Rapport {
     private List<Medlem> medlemmer;
 
-    // Konstruktør
+    // Constructor
     public ØkonomiRapport(List<Medlem> medlemmer) {
         this.medlemmer = medlemmer;
     }
@@ -28,5 +28,4 @@ public class ØkonomiRapport extends Rapport {
         System.out.println("================");
         System.out.println("Total indkomst: " + beregnTotalIndkomst());
     }
-
 }

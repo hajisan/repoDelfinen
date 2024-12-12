@@ -10,23 +10,13 @@ public class KonsolHandler {
     FilStyrer filStyrer;
     KontingentStyrer kontingentStyrer;
 
-    //Constructor -- Tom indtil videre
+    //Constructor initialiserer en FilStyrer og KontingentStyrer
     public KonsolHandler() {
         filStyrer = new FilStyrer();
-        kontingentStyrer = new KontingentStyrer(filStyrer);
+        kontingentStyrer = new KontingentStyrer();
     }
 
-    //Opretter et nyt medlem med Factory-metoden fra Medlem-klassen
-    //public Medlem opretMedlem(String navn, String fødselsdato, String medlemskategori) {
-    //    return new Medlem(navn, stringToLocalDate(fødselsdato), medlemskategori);
-    //}
-
-    //Tilføjer en tid til det valgte medlem ud fra tid i sekunder og millisekunder
-    public void tilføjTidTilMedlem(Medlem medlem, long sekunder, long millisekunder) {
-        //medlem.tilføjTid(Duration.ofSeconds(sekunder, millisekunder*1000));
-    }
-
-    //Tilføjer en træningstid til det valgte medlem
+    // Metode der tilføjer en træningstid til det valgte medlem
     public void tilføjSvømmetidTilMedlem(Medlem medlem, Duration tid, DisciplinNavne disciplin, LocalDate dato) {
         System.out.println("Registrerer tid for disciplinen: " + disciplin);
         Svømmetid svømmetid = new Svømmetid(disciplin, tid, dato);
@@ -34,32 +24,12 @@ public class KonsolHandler {
         System.out.println("Registreret ny tid for " + disciplin + ": " + svømmetid);
     }
 
-    //Tilføjer en Stævnetid til det valgte medlem
+    // Metode der tilføjer en Stævnetid til det valgte medlem
     public void tilføjStævnetidTilMedlem(Medlem medlem, Duration tid, DisciplinNavne disciplin, LocalDate dato, String lokalitet) {
         System.out.println("Registrerer tid for disciplinen: " + disciplin);
         Stævnetid stævnetid = new Stævnetid(disciplin, tid, dato, lokalitet);
         medlem.tilføjStævnetid(stævnetid);
         System.out.println("Registreret ny tid for " + disciplin + ": " + stævnetid);
-    }
-
-    //Returnerer en ArrayList af et givent medlems Svømmetider
-    public ArrayList<Svømmetid> visEtMedlemsSvømmetider(Medlem medlem) {
-        ArrayList<Svømmetid> alleSvømmetider = new ArrayList<>();
-        alleSvømmetider.addAll(medlem.getSvømmetider("Butterfly"));
-        alleSvømmetider.addAll(medlem.getSvømmetider("Crawl"));
-        alleSvømmetider.addAll(medlem.getSvømmetider("Rygcrawl"));
-        alleSvømmetider.addAll(medlem.getSvømmetider("Brystsvømning"));
-        return alleSvømmetider;
-    }
-
-    //Returnerer en ArrayList af et givent medlems Stævnetider
-    public ArrayList<Stævnetid> visStævnetider(Medlem medlem) {
-        ArrayList<Stævnetid> alleStævnetider = new ArrayList<>();
-        alleStævnetider.addAll(medlem.getStævnetider("Butterfly"));
-        alleStævnetider.addAll(medlem.getStævnetider("Crawl"));
-        alleStævnetider.addAll(medlem.getStævnetider("Rygcrawl"));
-        alleStævnetider.addAll(medlem.getStævnetider("Brystsvømning"));
-        return alleStævnetider;
     }
 
     // Metode der tager en String af formen "mm:ss", hvor m er minutter og s er sekunder
@@ -75,13 +45,14 @@ public class KonsolHandler {
         }
     }
 
-    // Hjælpefunktion til at formatere Duration som en læsbar streng i formen
+    // Metode der formaterer Duration som en brugbar String i formen "mm:ss"
     public static String durationToString(Duration duration) {
         long minutter = duration.toMinutes();
         long sekunder = duration.minusMinutes(minutter).getSeconds();
         return String.format("%02d:%02d", minutter, sekunder);
     }
 
+    // Metode der laver en String af formen "dd/mm/yyyy" om til et LocalDate-objekt
     public static LocalDate stringToLocalDate(String dato) {
         //Try-catch-blok der skal sørge for, at dato-Stringen er i formatet dd/mm/yyyy
         try {
@@ -96,6 +67,7 @@ public class KonsolHandler {
         }
     }
 
+    // Metode der laver et LocalDate-objekt om til en String i formatet "dd/mm/yyyy"
     public static String LocalDateToString(LocalDate dato) {
         return String.format("%02d/%02d/%04d", dato.getDayOfMonth(), dato.getMonthValue(), dato.getYear());
     }
@@ -112,7 +84,6 @@ public class KonsolHandler {
             System.out.println("1. Opret nyt medlem");
             System.out.println("2. Registrer stævnetid");
             System.out.println("3. Registrer træningstid");
-            //System.out.println(".. Rediger medlem");
             System.out.println("4. Vis alle medlemmer");
             System.out.println("5. Beregn forventet kontingentindkomst");
             System.out.println("6. Vis top 5 svømmere");
@@ -193,7 +164,7 @@ public class KonsolHandler {
                     break;
                 case 4:
                     // Viser alle medlemmer
-                    ArrayList<Medlem> medlemmer = filStyrer.læsAlleMedlemmer(); //henter bare metoden fra filstyrer
+                    ArrayList<Medlem> medlemmer = FilStyrer.læsAlleMedlemmer(); //henter bare metoden fra filstyrer
                     if (medlemmer.isEmpty()) {
                         System.out.println("Ingen medlemmer fundet."); //hvis ikke der er indhold, giv meddelse
                     } else {
@@ -204,7 +175,7 @@ public class KonsolHandler {
                     break;
                 case 5:
                     // Beregner og viser forventet kontingentindkomst
-                    double forventetIndkomst = kontingentStyrer.beregnForventetIndkomst(); //kalder metoden fra kontingentStyrer-klassen
+                    double forventetIndkomst = kontingentStyrer.beregnForventetIndkomst(FilStyrer.læsAlleMedlemmer()); //kalder metoden fra kontingentStyrer-klassen
                     System.out.println("Forventet kontingentindkomst: " + forventetIndkomst + " DKK");
                     break;
                 case 6:
@@ -217,9 +188,9 @@ public class KonsolHandler {
                     DisciplinNavne disciplin = DisciplinNavne.valueOf(disciplinInput.toUpperCase());
 
                     // Find disciplinen og hent top 5 tider
-                    medlemmer = filStyrer.læsAlleMedlemmer();
+                    medlemmer = FilStyrer.læsAlleMedlemmer();
                     for (Medlem medlem : medlemmer) {
-                        Svømmedisciplin svømmedisciplin = medlem.findEllerOpretSvømmedisciplin(disciplin);
+                        Svømmedisciplin svømmedisciplin = medlem.findSvømmedisciplin(disciplin);
                         ArrayList<Svømmetid> top5 = svømmedisciplin.getTop5Træningstider();
 
                         // Print top 5 tider for hver svømmer
@@ -231,7 +202,7 @@ public class KonsolHandler {
                     break;
                 case 7:
                     // Genererer en økonomirapport
-                    ArrayList<Medlem> medlemmerForRapport = filStyrer.læsAlleMedlemmer(); //henter alle medlemmer
+                    ArrayList<Medlem> medlemmerForRapport = FilStyrer.læsAlleMedlemmer(); //henter alle medlemmer
                     ØkonomiRapport rapport = new ØkonomiRapport(medlemmerForRapport); //initaliserer et nyt rapport objekt
                     double totalIndkomst = rapport.beregnTotalIndkomst();
                     System.out.println("Total indkomst: " + totalIndkomst + " DKK");
@@ -246,15 +217,13 @@ public class KonsolHandler {
                     System.out.println("Ugyldigt valg. Prøv igen.");
             }
         }
-
         scanner.close();
     }
 
-
-    // Hjælpefunktion til at finde et medlem baseret på navn
+    // Metode der finder et medlem baseret på navn
     private Medlem findMedlem(String navn) throws IOException {
         // Søger efter et medlem i listen over medlemmer
-        ArrayList<Medlem> medlemmer = filStyrer.læsAlleMedlemmer();
+        ArrayList<Medlem> medlemmer = FilStyrer.læsAlleMedlemmer();
         for (Medlem medlem : medlemmer) {
             if (medlem.getNavn().equalsIgnoreCase(navn)) {
                 return medlem;

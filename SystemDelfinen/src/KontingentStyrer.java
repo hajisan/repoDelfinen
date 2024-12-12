@@ -2,16 +2,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class KontingentStyrer {
-    FilStyrer filStyrer;
 
-    public KontingentStyrer(FilStyrer filStyrer) {
-        this.filStyrer = filStyrer;
+    public KontingentStyrer() {
     }
 
     //Metode der beregner og returnerer summen af alle medlemmers kontingenter
-    public double beregnForventetIndkomst() throws IOException {
+    public double beregnForventetIndkomst(ArrayList<Medlem> liste) throws IOException {
         double forventetIndkomst = 0;
-        for (Medlem medlem : filStyrer.læsAlleMedlemmer()) {
+        for (Medlem medlem : liste) {
             forventetIndkomst += medlem.getMedlemsKategori().getKontingent();
         }
         return forventetIndkomst;
@@ -20,7 +18,7 @@ public class KontingentStyrer {
     //Metode der returnerer en liste over alle klubmedlemmer der er i restance
     public ArrayList<Medlem> findOverskredneBetalinger() throws IOException {
         ArrayList<Medlem> medlemmerIRestance = new ArrayList<>();
-        for (Medlem medlem : filStyrer.læsAlleMedlemmer()) {
+        for (Medlem medlem : FilStyrer.læsAlleMedlemmer()) {
             if (medlem.getRestance()) medlemmerIRestance.add(medlem);
         }
         return medlemmerIRestance;
