@@ -18,6 +18,16 @@ public enum Medlemstyper {
     @Override
     public String toString() {
         return switch (this) {
+            case PASSIV -> "passiv";
+            case AKTIV_JUNIOR -> "aktiv";
+            case AKTIV_SENIOR -> "aktiv";
+            case AKTIV_SENIOR_60PLUS -> "aktiv";
+        };
+    }
+
+
+    public String pænToString() {
+        return switch (this) {
             case PASSIV -> "Passivt medlemskab";
             case AKTIV_JUNIOR -> "Aktivt juniormedlemskab";
             case AKTIV_SENIOR -> "Aktivt seniormedlemskab";

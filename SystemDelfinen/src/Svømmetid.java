@@ -2,12 +2,12 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 public class Svømmetid {
-    private Duration tid; // Tid som en Duration
-    private disciplinNavne disciplin; // Disciplin (fx Rygcrawl, Butterfly)
-    private LocalDate dato; // Dato for svømmetiden
+    protected Duration tid; // Tid som en Duration
+    protected DisciplinNavne disciplin; // Disciplin (fx Rygcrawl, Butterfly)
+    protected LocalDate dato; // Dato for svømmetiden
 
     // Constructor
-    public Svømmetid(disciplinNavne disciplin, Duration tid, LocalDate dato) {
+    public Svømmetid(DisciplinNavne disciplin, Duration tid, LocalDate dato) {
         this.disciplin = disciplin;
         this.tid = tid;
         this.dato = dato;
@@ -18,7 +18,7 @@ public class Svømmetid {
         return tid;
     }
 
-    public disciplinNavne getDisciplin() {
+    public DisciplinNavne getDisciplin() {
         return disciplin;
     }
 
@@ -27,7 +27,7 @@ public class Svømmetid {
     }
 
     // Metode til at tilføje svømmetid til medlemmet
-    public static void tilføjTidTilMedlem(Medlem medlem, long minutter, long sekunder, disciplinNavne disciplin, LocalDate dato) {
+    public static void tilføjTidTilMedlem(Medlem medlem, long minutter, long sekunder, DisciplinNavne disciplin, LocalDate dato) {
         if (medlem == null) {
             throw new IllegalArgumentException("Medlem må ikke være null.");
         }
@@ -38,19 +38,14 @@ public class Svømmetid {
         // Opret en ny Svømmetid
         Svømmetid nySvømmetid = new Svømmetid(disciplin, nyTid, dato);
 
-        // Tilføj svømmetiden til medlemmets træningsresultater
-        medlem.getSvømmetider().add(nySvømmetid);
-
         // Feedback til konsollen
-        System.out.println("Svømmetid tilføjet: " + formatDuration(nyTid) + " i " +
+        System.out.println("Svømmetid tilføjet: " + KonsolHandler.durationToString(nyTid) + " i " +
                 disciplin + " for medlem: " + medlem.getNavn());
     }
 
-    // Hjælpefunktion til at formatere Duration som en læsbar streng
-    private static String formatDuration(Duration duration) {
-        long minutter = duration.toMinutes();
-        long sekunder = duration.minusMinutes(minutter).getSeconds();
-        return String.format("%02d:%02d", minutter, sekunder); //%02d betyder, at heltallet skal være mindst to cifre langt.
+    @Override
+    public String toString() {
+        String string = "";
+        return disciplin.toString() + ":" + KonsolHandler.durationToString(tid) + ":" + KonsolHandler.LocalDateToString(dato);
     }
-
 }

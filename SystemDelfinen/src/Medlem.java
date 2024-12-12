@@ -7,71 +7,77 @@ public class Medlem {
     protected String navn;
     protected LocalDate fødselsDato;
     protected Medlemstyper medlemstypeEnum;
-    protected ArrayList<Svømmetid> træningstider = new ArrayList<>(); // Initialiseret på forhånd
-    protected ArrayList<Stævnetid> stævnetider = new ArrayList<>(); // Initialiseret på forhånd
     protected boolean restance = false;
-    protected static ArrayList<Svømmedisciplin> svømmediscipliner = new ArrayList<>(); // Initialiseret på forhånd
-
-
+    protected ArrayList<Svømmedisciplin> svømmediscipliner;
 
     // Konstruktør for at initialisere et Medlem-objekt
-    public Medlem(String navn, LocalDate fødselsDato, String medlemsKategori) {
+    public Medlem(String navn, LocalDate fødselsdato, String medlemsKategori) {
         // Tjekker om navnet er null eller tomt og kaster en IllegalArgumentException hvis det er tilfældet
         if (navn == null || navn.isEmpty()) {
             throw new IllegalArgumentException("Navn må ikke være tomt.");
         }
         this.navn = navn;
-        this.fødselsDato = fødselsDato;
-        //afgør i vores oprettelse hvilken kategori medlemmet falder ind under, baseret på alder og input
+        this.fødselsDato = fødselsdato;
+        svømmediscipliner= new ArrayList<>();
+        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.BUTTERFLY));
+        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.CRAWL));
+        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.RYGCRAWL));
+        svømmediscipliner.add(findEllerOpretSvømmedisciplin(DisciplinNavne.BRYSTSVØMNING));
+
         switch (medlemsKategori.toLowerCase().trim()) {
             case "aktiv":
-                if (LocalDate.now().minusYears(18).isBefore(this.fødselsDato))
+                if (LocalDate.now().minusYears(18).isBefore(this.fødselsDato)) {
                     this.medlemstypeEnum = Medlemstyper.AKTIV_JUNIOR;
-                else if (LocalDate.now().minusYears(18).isAfter(this.fødselsDato) &&
-                        LocalDate.now().minusYears(60).isBefore(this.fødselsDato))
+                } else if (LocalDate.now().minusYears(18).isAfter(this.fødselsDato) &&
+                        LocalDate.now().minusYears(60).isBefore(this.fødselsDato)) {
                     this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR;
-                else
+                } else {
                     this.medlemstypeEnum = Medlemstyper.AKTIV_SENIOR_60PLUS;
+                }
                 break;
             case "passiv":
                 this.medlemstypeEnum = Medlemstyper.PASSIV;
                 break;
             default:
                 throw new IllegalArgumentException(
-                        "Medlemskategori " + medlemsKategori + " kan ikke genkendes. Skriv venligst enten aktiv eller passiv."
+                        "Medlemskategori: " + medlemsKategori + " kan ikke genkendes. Skriv venligst enten aktiv eller passiv."
                 );
         }
     }
 
-/*
- Finder en eksisterende svømmedisciplin baseret på dens navn eller opretter en ny,
- hvis den ikke findes i listen over svømmediscipliner
-*/
-    public Svømmedisciplin findEllerOpretSvømmedisciplin(disciplinNavne disciplin) {
-        //Løber igennem listen af eksisterende svømmediscipliner
+    public Medlem(String navn, String fødselsdato, String medlemsKategori) {
+        this(navn, KonsolHandler.stringToLocalDate(fødselsdato), medlemsKategori);
+
+    }
+
+    public Svømmedisciplin findEllerOpretSvømmedisciplin(DisciplinNavne disciplin) {
         for (Svømmedisciplin svømmedisciplin : svømmediscipliner) {
-            //tjekker om disciplinen navn matcher noget i forvejem
             if (svømmedisciplin.getDisciplinNavn().equals(disciplin.name())) {
-                //returnerer den aktuelle svømmedisciplin hvis navnet matcher
                 return svømmedisciplin;
             }
         }
-        //hvis disciplinen ikke findes
         Svømmedisciplin nyDisciplin = new Svømmedisciplin(disciplin);
-        //tilføj den nye disciplin
         svømmediscipliner.add(nyDisciplin);
-        //returnerer den nye disciplin
         return nyDisciplin;
     }
 
     public void tilføjTræningstid(Svømmetid træningstid) {
-        this.træningstider.add(træningstid);
+        String disciplin = træningstid.getDisciplin().toString();
+        for (int i = 0; i < this.svømmediscipliner.size(); i++) {
+            if (svømmediscipliner.get(i).getDisciplinNavn().equalsIgnoreCase(disciplin)) {
+                svømmediscipliner.get(i).registrerTræningsTid(træningstid);
+            }
+        }
     }
 
     public void tilføjStævnetid(Stævnetid stævnetid) {
-        this.stævnetider.add(stævnetid);
+        String disciplin = stævnetid.getDisciplin().toString();
+        for (int i = 0; i < this.svømmediscipliner.size(); i++) {
+            if (svømmediscipliner.get(i).getDisciplinNavn().equalsIgnoreCase(disciplin)) {
+                svømmediscipliner.get(i).registrerStævneTid(stævnetid);
+            }
+        }
     }
-
 
     // Getter og Setter metoder
     public String getNavn() {
@@ -110,35 +116,109 @@ public class Medlem {
         return this.restance;
     }
 
-    public void setRestance() {
-        this.restance = !this.restance;
+    public void setRestance(boolean restance) {
+        this.restance = restance;
     }
 
-    public ArrayList<Svømmetid> getSvømmetider() {
-        return træningstider;
-    }
-
-    public ArrayList<Stævnetid> getStævnetider() {
-        return stævnetider;
-    }
-
-    public Enum<Medlemstyper> getMedlemstypeEnum() {
+    public Medlemstyper getMedlemstypeEnum() {
         return medlemstypeEnum;
     }
 
+    public ArrayList<Svømmetid> getSvømmetider(String disciplin) {
+        for (Svømmedisciplin sd : svømmediscipliner) {
+            if (sd.getDisciplinNavn().equalsIgnoreCase(disciplin)) {
+                if (sd.getTræningsTider() == null) return new ArrayList<Svømmetid>();
+                else return sd.getTræningsTider();
+            }
+        }
+        return null;
+    }
 
+    public ArrayList<Stævnetid> getStævnetider(String disciplin) {
+        for (Svømmedisciplin sd : svømmediscipliner) {
+            if (sd.getDisciplinNavn().equalsIgnoreCase(disciplin)) {
+                if (sd.getStævneTider() == null) return new ArrayList<Stævnetid>();
+                return sd.getStævneTider();
+            }
+        }
+        return null;
+    }
 
-    // toString-metode for at returnere en String af et Medlem-objekt i et let læseligt format
-    public String toString() {
-        return "Medlem{" +
-                "Navn: " + navn + "\n" +
-                "Fødselsdato: " + KonsolHandler.LocalDateToString(fødselsDato) + "\n" +
-                "Medlemskategori: " + medlemstypeEnum + "\n" +
-                "}";
+    public String getSvømmetiderSomString() {
+        String tider = null;
+        for (Svømmedisciplin disciplin : svømmediscipliner) {
+            tider += Svømmedisciplin.træningstiderTilString(disciplin.getTræningsTider());
+        }
+        return tider;
+        //svømmediscipliner.get(0).træningstiderTilString() + svømmediscipliner.get(1).træningstiderTilString() + svømmediscipliner.get(2).træningstiderTilString() + svømmediscipliner.get(3).træningstiderTilString();
+    }
+
+    public String getStævnetiderSomString() {
+        String tider = "";
+        for (Svømmedisciplin disciplin : svømmediscipliner) {
+            tider += Svømmedisciplin.stævnetiderTilString(disciplin.getStævneTider());
+        }
+        return tider;
+        //svømmediscipliner.get(0).stævnetiderTilString() + svømmediscipliner.get(1).stævnetiderTilString() + svømmediscipliner.get(2).stævnetiderTilString() + svømmediscipliner.get(3).stævnetiderTilString();
+    }
+
+    public ArrayList<Svømmedisciplin> getSvømmediscipliner() {
+        return svømmediscipliner;
+    }
+
+    public String genererCSV() {
+        StringBuilder csvLinje = new StringBuilder();
+        csvLinje.append(navn).append(",")
+                .append(KonsolHandler.LocalDateToString(fødselsDato)).append(",")
+                .append(medlemstypeEnum).append(",")
+                .append(restance ? "true" : "false");
+
+        for (Svømmedisciplin disciplin : svømmediscipliner) {
+            //csvLinje.append()
+            csvLinje.append(",").append(svømmetiderTilCsv(disciplin.getTræningsTider()));
+            csvLinje.append(",").append(stævnetiderTilCsv(disciplin.getStævneTider()));
+        }
+        return csvLinje.toString();
+    }
+
+    public String svømmetiderTilCsv(ArrayList<Svømmetid> tider) {
+        if (tider == null || tider.isEmpty()) {
+            return "";
+        }
+        StringBuilder csvTider = new StringBuilder();
+        for (Svømmetid tid : tider) {
+            csvTider.append(KonsolHandler.durationToString(tid.getTid()))
+                    .append("|")
+                    .append(KonsolHandler.LocalDateToString(tid.getDato()))
+                    .append(";");
+        }
+        csvTider.setLength(csvTider.length() - 1); // Fjern sidste semikolon
+        return csvTider.toString();
+    }
+
+    public String stævnetiderTilCsv(ArrayList<Stævnetid> tider) {
+        if (tider == null || tider.isEmpty()) {
+            return "";
+        }
+        StringBuilder csvTider = new StringBuilder();
+        for (Stævnetid tid : tider) {
+            csvTider.append(KonsolHandler.durationToString(tid.getTid()))
+                    .append("|")
+                    .append(KonsolHandler.LocalDateToString(tid.getDato()))
+                    .append("|")
+                    .append(tid.getLokalitet())
+                    .append(";");
+        }
+        csvTider.setLength(csvTider.length() - 1); // Fjern sidste semikolon
+        return csvTider.toString();
     }
 
 
-    public static ArrayList<Svømmedisciplin> getSvømmediscipliner() {
-        return svømmediscipliner;
+    // toString-metode for at returnere en String af et Medlem-objekt
+    public String toString() {
+        return "- Medlem:\n" +
+                "  Navn: " + navn + "\n" +
+                "  Fødselsdato: " + KonsolHandler.LocalDateToString(fødselsDato) + "\n" +
+                "  Medlemskategori: " + medlemstypeEnum + "\n";
     }
 }
