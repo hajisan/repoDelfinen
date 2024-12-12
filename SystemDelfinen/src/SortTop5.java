@@ -10,7 +10,7 @@ public class SortTop5 {
 
     // Denne metode forventer en liste af Svømmetid-objekter og returnerer de top 5 hurtigste
     public static ArrayList<Svømmetid> top5Svømmere(ArrayList<Svømmetid> alleTider) {
-        if (alleTider == null || alleTider.isEmpty()) {
+        if (alleTider == null || alleTider.isEmpty()) { //Hurtig kontrol om er overhovedet er nogle i listen
             throw new IllegalArgumentException("Tidslisten er tom eller null.");
         }
 
